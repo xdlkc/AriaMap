@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/map"
+        android:icon="@mipmap/map"
+        android:title="    地图"/>
+    <item
+        android:id="@+id/subway"
+        android:icon="@mipmap/map"
+        android:title="    地铁路线图"/>
+    <item
+        android:id="@+id/scene"
+        android:icon="@mipmap/map"
+        android:title="    实景导航"/>
+    <item
+        android:id="@+id/wallet"
+        android:icon="@mipmap/map"
+        android:title="    收藏夹"/>
+    <item
+        android:id="@+id/download"
+        android:icon="@mipmap/map"
+        android:title="    离线包下载"/>
+    <item
+        android:id="@+id/bus"
+        android:icon="@mipmap/map"
+        android:title="    实时公交"/>
+    <item
+        android:id="@+id/step"
+        android:icon="@mipmap/map"
+        android:title="    计步器"/>
+
+</menu>

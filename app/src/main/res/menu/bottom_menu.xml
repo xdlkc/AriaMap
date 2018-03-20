@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/home"
+        android:enabled="true"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/satellite"
+        android:title="home" />
+    <item
+        android:id="@+id/service"
+        android:enabled="true"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/satellite"
+        android:title="service" />
+    <item
+        android:id="@+id/message"
+        android:enabled="true"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/satellite"
+        android:title="message" />
+
+    <item
+        android:id="@+id/personal"
+        android:enabled="true"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/satellite"
+        android:title="personal" />
+</menu>
