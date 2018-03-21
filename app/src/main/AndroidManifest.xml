@@ -41,20 +41,23 @@
             android:enabled="true"
             android:process=":remote" />
 
-
         <meta-data
             android:name="com.baidu.lbsapi.API_KEY"
-            android:value="d521WulfOyVh5H5TuNMqjqvxnXgWiSKH" />
+            android:value="HsM7LUKpgk4vgOewGYvHqgB5LPp8ciUu" />
 
-        <activity android:name=".ShowMapActivity" />
-        <activity android:name=".HomePageActivity">
+        <activity android:name=".ShowMapActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".HomePageActivity" />
+        <activity android:name=".BusInfoActivity" />
+        <activity
+            android:name=".TestActivity"
+            android:label="@string/title_activity_test"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
-
 
 </manifest>
