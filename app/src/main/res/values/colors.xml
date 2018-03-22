@@ -4,17 +4,7 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
 
-    <color name="BLACK">#FF000000</color>
-    <color name="DK_GRAY">#FF444444</color>
-    <color name="GRAY">#FF888888</color>
-    <color name="LT_GRAY">#FFCCCCCC</color>
-    <color name="WHITE">#FFFFFFFF</color>
-    <color name="RED">#FFFF0000</color>
-    <color name="GREEN">#FF00FF00</color>
-    <color name="BLUE">#FF0000FF</color>
-    <color name="YELLOW">#FFFFFF00</color>
-    <color name="CYAN">#FF00FFFF</color>
-    <color name="MAGENTA">#FFFF00FF</color>
+    <color name="background_floating_material_dark">#ff424242</color>
 
     <color name="white">#FFFFFF</color> <!--白色 -->
     <color name="ivory">#FFFFF0</color> <!--象牙色 -->

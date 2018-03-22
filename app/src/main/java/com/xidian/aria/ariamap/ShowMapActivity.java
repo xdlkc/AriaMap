@@ -1,9 +1,10 @@
 package com.xidian.aria.ariamap;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.TextInputEditText;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -11,7 +12,6 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.MultiAutoCompleteTextView;
 import android.widget.Toast;
 
 import com.baidu.location.BDLocation;
@@ -30,17 +30,17 @@ import com.baidu.mapapi.map.MapView;
 import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.map.OverlayOptions;
 import com.baidu.mapapi.model.LatLng;
+import com.baidu.mapapi.search.core.RouteLine;
 import com.baidu.mapapi.search.core.SearchResult;
 import com.baidu.mapapi.search.route.BikingRouteResult;
 import com.baidu.mapapi.search.route.DrivingRoutePlanOption;
 import com.baidu.mapapi.search.route.DrivingRouteResult;
 import com.baidu.mapapi.search.route.IndoorRouteResult;
-import com.baidu.mapapi.search.route.MassTransitRouteLine;
 import com.baidu.mapapi.search.route.MassTransitRouteResult;
 import com.baidu.mapapi.search.route.OnGetRoutePlanResultListener;
 import com.baidu.mapapi.search.route.PlanNode;
 import com.baidu.mapapi.search.route.RoutePlanSearch;
-import com.baidu.mapapi.search.route.TransitRouteLine;
+import com.baidu.mapapi.search.route.SuggestAddrInfo;
 import com.baidu.mapapi.search.route.TransitRoutePlanOption;
 import com.baidu.mapapi.search.route.TransitRouteResult;
 import com.baidu.mapapi.search.route.WalkingRoutePlanOption;
@@ -50,11 +50,17 @@ import com.baidu.mapapi.search.sug.SuggestionResult;
 import com.baidu.mapapi.search.sug.SuggestionSearch;
 import com.baidu.mapapi.search.sug.SuggestionSearchOption;
 import com.xidian.aria.ariamap.enums.TrafficWay;
-import com.xidian.aria.ariamap.overlayutil.MassTransitRouteOverlay;
+import com.xidian.aria.ariamap.overlayutil.DrivingRouteOverlay;
+import com.xidian.aria.ariamap.overlayutil.OverlayManager;
 import com.xidian.aria.ariamap.overlayutil.TransitRouteOverlay;
+import com.xidian.aria.ariamap.overlayutil.WalkingRouteOverlay;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
-public class ShowMapActivity extends Activity {
+public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickListener,
+        OnGetRoutePlanResultListener {
     // 地图显示组件
     private MapView mMapView = null;
     // 地图
@@ -62,12 +68,11 @@ public class ShowMapActivity extends Activity {
     private RoutePlanSearch mSearch = null;
     private LocationClient mLocationClient = null;
     private MyLocationListener locationListener = null;
-    // 目标
-    private TextInputEditText stTxt = null;
     // 侧边栏按钮
     private ImageButton userBtn = null;
     // 卫星图按钮
     private FloatingActionButton satelliteBtn = null;
+    // 地图类型
     private int mapType = BaiduMap.MAP_TYPE_NORMAL;
     // 热力图按钮
     private FloatingActionButton heatBtn = null;
@@ -84,10 +89,20 @@ public class ShowMapActivity extends Activity {
     // 城市
     private String city = null;
     //当前地图缩放级别
-    private float zoomLevel;
-    private AutoCompleteTextView autoCompleteTextView=null;
+    private int zoomLevel = 14;
+    private AutoCompleteTextView enAutoTw =null;
+    private List<String> suggest;
     private SuggestionSearch mSuggestionSearch = null;
     ArrayAdapter<String> sugAdapter;
+
+    WalkingRouteResult mWalkRes = null;
+    BikingRouteResult mBikeRes = null;
+    TransitRouteResult mTransitRes = null;
+    DrivingRouteResult mDriveRes = null;
+    MassTransitRouteResult mMassRes = null;
+    RouteLine route = null;
+    OverlayManager routeOverlay = null;
+
     /**
      * 路线检索
      * @param way 交通方式
@@ -137,7 +152,7 @@ public class ShowMapActivity extends Activity {
         super.onCreate(savedInstanceState);
         SDKInitializer.initialize(getApplicationContext());
         setContentView(R.layout.activity_show_map);
-//        stTxt = (TextInputEditText) findViewById(R.id.st_txt);
+        mMapView = (MapView) findViewById(R.id.bmapView);
         userBtn = (ImageButton) findViewById(R.id.user_btn);
         satelliteBtn = (FloatingActionButton) findViewById(R.id.satellite_btn);
         minusBtn = (Button) findViewById(R.id.minus_btn);
@@ -147,27 +162,9 @@ public class ShowMapActivity extends Activity {
         nearBtn = (Button) findViewById(R.id.near_btn);
         navBtn = (Button) findViewById(R.id.nav_btn);
         wayBtn = (Button) findViewById(R.id.way_btn);
-        autoCompleteTextView = (AutoCompleteTextView) findViewById(R.id.endAutoTw);
+        enAutoTw = (AutoCompleteTextView) findViewById(R.id.endAutoTw);
         mSuggestionSearch = SuggestionSearch.newInstance();
-        sugAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line);
-        autoCompleteTextView.setAdapter(sugAdapter);
-        autoCompleteTextView.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                mSuggestionSearch
-                        .requestSuggestion((new SuggestionSearchOption())
-                                .keyword(charSequence.toString()).city(city));
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-            }
-        });
         initMap();
         initComponents();
         initSearchTool();
@@ -205,8 +202,6 @@ public class ShowMapActivity extends Activity {
      * 初始化地图
      */
     private void initMap() {
-        //获取地图控件引用
-        mMapView = (MapView) findViewById(R.id.bmapView);
         // 不显示缩放比例尺
         mMapView.showZoomControls(false);
         // 不显示百度地图Logo
@@ -236,87 +231,35 @@ public class ShowMapActivity extends Activity {
      */
     private void initSearchTool(){
         mSearch = RoutePlanSearch.newInstance();
-        mSearch.setOnGetRoutePlanResultListener(new OnGetRoutePlanResultListener() {
-            @Override
-            public void onGetWalkingRouteResult(WalkingRouteResult walkingRouteResult) {
-
-            }
-            @Override
-            public void onGetTransitRouteResult(TransitRouteResult result) {
-                if (result.error != SearchResult.ERRORNO.NO_ERROR) {
-                    //未找到结果
-                    return;
-                }
-                TransitRouteLine route = result.getRouteLines().get(0);
-                //创建公交路线规划线路覆盖物
-                TransitRouteOverlay overlay = new TransitRouteOverlay(mBaiduMap);
-                //设置公交路线规划数据
-                overlay.setData(route);
-                //将公交路线规划覆盖物添加到地图中
-                overlay.addToMap();
-                overlay.zoomToSpan();
-            }
-
-            @Override
-            public void onGetMassTransitRouteResult(MassTransitRouteResult result) {
-                if (result == null || result.error != SearchResult.ERRORNO.NO_ERROR) {
-                    //未找到结果
-                    return;
-                }
-                if (result.error == SearchResult.ERRORNO.AMBIGUOUS_ROURE_ADDR) {
-                    //起终点或途经点地址有岐义，通过以下接口获取建议查询信息
-                    result.getSuggestAddrInfo();
-                    return;
-                }
-                if (result.error == SearchResult.ERRORNO.NO_ERROR) {;
-                    MassTransitRouteLine route = result.getRouteLines().get(0);
-                    //创建公交路线规划线路覆盖物
-                    MassTransitRouteOverlay overlay = new MassTransitRouteOverlay(mBaiduMap);
-                    //设置公交路线规划数据
-                    overlay.setData(route);
-                    //将公交路线规划覆盖物添加到地图中
-                    overlay.addToMap();
-                    overlay.zoomToSpan();
-                }
-            }
-
-            @Override
-            public void onGetDrivingRouteResult(DrivingRouteResult drivingRouteResult) {
-
-            }
-
-            @Override
-            public void onGetIndoorRouteResult(IndoorRouteResult indoorRouteResult) {
-
-            }
-
-            @Override
-            public void onGetBikingRouteResult(BikingRouteResult bikingRouteResult) {
-
-            }
-        });
+        mSearch.setOnGetRoutePlanResultListener(ShowMapActivity.this);
     }
 
     /**
      * 初始化界面按钮控件
      */
     private void initComponents(){
+        // 设置提示开始长度
+        enAutoTw.setThreshold(1);
+        enAutoTw.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
-//        stTxt.addTextChangedListener(new TextWatcher() {
-//            @Override
-//            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-//            }
-//            @Override
-//            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-//            }
-//            @Override
-//            public void afterTextChanged(Editable editable) {
-//                String key = editable.toString();
-//
-//                mSuggestionSearch.requestSuggestion((new SuggestionSearchOption()).keyword(key).city(city));
-//            }
-//        });
+            }
 
+            @Override
+            public void onTextChanged(CharSequence cs, int i, int i1, int i2) {
+                if (cs.length() <= 0) {
+                    return;
+                }
+                mSuggestionSearch
+                        .requestSuggestion((new SuggestionSearchOption())
+                                .keyword(cs.toString()).city(city));
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+            }
+        });
         satelliteBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -329,14 +272,12 @@ public class ShowMapActivity extends Activity {
                 }
             }
         });
-
         heatBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 mBaiduMap.setBaiduHeatMapEnabled(!mBaiduMap.isBaiduHeatMapEnabled());
             }
         });
-
         trafficBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -344,7 +285,6 @@ public class ShowMapActivity extends Activity {
                 mBaiduMap.setTrafficEnabled(!bool);
             }
         });
-
         plusBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -372,14 +312,14 @@ public class ShowMapActivity extends Activity {
         wayBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String endStr = stTxt.getText().toString();
+                String endStr = enAutoTw.getText().toString();
                 if (endStr.equals("")){
                     Toast toast = Toast.makeText(getApplicationContext(),"请输入目标位置！",Toast.LENGTH_SHORT);
                     toast.show();
                 }else {
                     PlanNode stNode = PlanNode.withLocation(centerPoint);
                     PlanNode enNode = PlanNode.withCityNameAndPlaceName(city,endStr);
-                    search(TrafficWay.getByWay("bus"),stNode,enNode);
+                    search(TrafficWay.getByWay("driving"),stNode,enNode);
                 }
             }
         });
@@ -419,15 +359,132 @@ public class ShowMapActivity extends Activity {
                     return ;
                     //未找到相关结果
                 }
-                sugAdapter.clear();
+                suggest = new ArrayList<String>();
                 for (SuggestionResult.SuggestionInfo info : res.getAllSuggestions()) {
                     if (info.key != null)
-                        sugAdapter.add(info.key);
+                        suggest.add(info.key);
                 }
+                sugAdapter = new ArrayAdapter<String>(ShowMapActivity.this, android.R.layout.simple_dropdown_item_1line, suggest);
+                enAutoTw.setAdapter(sugAdapter);
                 sugAdapter.notifyDataSetChanged();
                 //获取在线建议检索结果
             }
         };
         mSuggestionSearch.setOnGetSuggestionResultListener(listener);
     }
+
+    @Override
+    public void onGetWalkingRouteResult(WalkingRouteResult result) {
+        if (result == null || result.error != SearchResult.ERRORNO.NO_ERROR) {
+            Toast.makeText(ShowMapActivity.this, "抱歉，未找到结果", Toast.LENGTH_SHORT).show();
+        }
+        if (result.error == SearchResult.ERRORNO.AMBIGUOUS_ROURE_ADDR) {
+            // 起终点或途经点地址有岐义，通过以下接口获取建议查询信息
+            // result.getSuggestAddrInfo()
+            return;
+        }else {
+            mWalkRes = result;
+            route = result.getRouteLines().get(0);
+            WalkingRouteOverlay overlay = new MyWalkingRouteOverlay(mBaiduMap);
+            mBaiduMap.setOnMarkerClickListener(overlay);
+            overlay.setData(result.getRouteLines().get(0));
+            overlay.addToMap();
+            overlay.zoomToSpan();
+        }
+
+
+    }
+
+    @Override
+    public void onGetTransitRouteResult(TransitRouteResult result) {
+
+        if (result == null || result.error != SearchResult.ERRORNO.NO_ERROR) {
+            Toast.makeText(ShowMapActivity.this, "抱歉，未找到结果", Toast.LENGTH_SHORT).show();
+        }
+        if (result.error == SearchResult.ERRORNO.AMBIGUOUS_ROURE_ADDR) {
+            // 起终点或途经点地址有岐义，通过以下接口获取建议查询信息
+            // result.getSuggestAddrInfo()
+            return;
+        }else {
+            mTransitRes = result;
+            route = result.getRouteLines().get(0);
+            TransitRouteOverlay overlay = new MyTransitRouteOverlay(mBaiduMap);
+            mBaiduMap.setOnMarkerClickListener(overlay);
+            overlay.setData(result.getRouteLines().get(0));
+            overlay.addToMap();
+            overlay.zoomToSpan();
+        }
+    }
+
+    @Override
+    public void onGetMassTransitRouteResult(MassTransitRouteResult result) {
+        if (result == null || result.error != SearchResult.ERRORNO.NO_ERROR) {
+            Toast.makeText(ShowMapActivity.this, "抱歉，未找到结果", Toast.LENGTH_SHORT).show();
+        }
+        if (result.error == SearchResult.ERRORNO.AMBIGUOUS_ROURE_ADDR) {
+            // 起终点模糊，获取建议列表
+            result.getSuggestAddrInfo();
+            return;
+        }
+    }
+
+
+    @Override
+    public void onGetDrivingRouteResult(DrivingRouteResult result) {
+        if (result == null || result.error != SearchResult.ERRORNO.NO_ERROR) {
+            Toast.makeText(ShowMapActivity.this, "抱歉，未找到结果", Toast.LENGTH_SHORT).show();
+        }
+        if (result.error == SearchResult.ERRORNO.AMBIGUOUS_ROURE_ADDR) {
+            // 起终点或途经点地址有岐义，通过以下接口获取建议查询信息
+            // result.getSuggestAddrInfo()
+            return;
+        }else {
+            mDriveRes = result;
+            route = result.getRouteLines().get(0);
+            DrivingRouteOverlay overlay = new MyDrivingRouteOverlay(mBaiduMap);
+            mBaiduMap.setOnMarkerClickListener(overlay);
+            overlay.setData(result.getRouteLines().get(0));
+            overlay.addToMap();
+            overlay.zoomToSpan();
+        }
+    }
+
+    @Override
+    public void onGetIndoorRouteResult(IndoorRouteResult indoorRouteResult) {
+
+    }
+
+    @Override
+    public void onGetBikingRouteResult(BikingRouteResult result) {
+        if (result == null || result.error != SearchResult.ERRORNO.NO_ERROR) {
+            Toast.makeText(ShowMapActivity.this, "抱歉，未找到结果", Toast.LENGTH_SHORT).show();
+        }
+        if (result.error == SearchResult.ERRORNO.AMBIGUOUS_ROURE_ADDR) {
+            // 起终点或途经点地址有岐义，通过以下接口获取建议查询信息
+            // result.getSuggestAddrInfo()
+            AlertDialog.Builder builder = new AlertDialog.Builder(ShowMapActivity.this);
+            builder.setTitle("提示");
+            builder.setMessage("检索地址有歧义，请重新设置。\n可通过getSuggestAddrInfo()接口获得建议查询信息");
+            builder.setPositiveButton("确认", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
+            builder.create().show();
+            return;
+        }
+    }
+
+    @Override
+    public void onMapClick(LatLng point) {
+        mBaiduMap.hideInfoWindow();
+    }
+
+    @Override
+    public boolean onMapPoiClick(MapPoi poi) {
+        return false;
+    }
+
+
 }
