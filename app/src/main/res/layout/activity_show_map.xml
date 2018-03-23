@@ -54,6 +54,7 @@
                     android:id="@+id/endAutoTw"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:singleLine="true"
                     android:completionThreshold="3"
                     android:hint="输入目标位置"/>
 
@@ -65,7 +66,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_below="@id/input_layout"
-                android:src="@drawable/satellite"
+                android:src="@mipmap/ic_satellite"
                 app:backgroundTint="@color/lightgray"
                 app:elevation="4dp"
                 app:fabSize="mini"
@@ -167,15 +168,13 @@
         </RelativeLayout>
     </android.support.constraint.ConstraintLayout>
     <android.support.design.widget.NavigationView
-        android:id="@+id/nav"
+        android:id="@+id/user_nav"
         android:layout_gravity="start"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:fitsSystemWindows="true"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         app:headerLayout="@layout/left_head_layout"
-        app:menu="@menu/new_menu"
-
-    >
-</android.support.design.widget.NavigationView>
+        app:menu="@menu/new_menu">
+    </android.support.design.widget.NavigationView>
 </android.support.v4.widget.DrawerLayout>

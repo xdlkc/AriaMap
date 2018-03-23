@@ -53,11 +53,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".HomePageActivity" />
-        <activity android:name=".BusInfoActivity" />
-        <activity
-            android:name=".TestActivity"
-            android:label="@string/title_activity_test"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+        <activity android:name=".BusSearchActivity" />
+        <activity android:name=".RouteResultActivity"></activity>
     </application>
 
 </manifest>

@@ -18,15 +18,15 @@
         android:icon="@mipmap/map"
         android:title="    收藏夹"/>
     <item
-        android:id="@+id/download"
+        android:id="@+id/bus_search_item"
         android:icon="@mipmap/map"
-        android:title="    离线包下载"/>
+        android:title="    公交线路查询"/>
     <item
-        android:id="@+id/bus"
+        android:id="@+id/bus_item"
         android:icon="@mipmap/map"
         android:title="    实时公交"/>
     <item
-        android:id="@+id/step"
+        android:id="@+id/step_item"
         android:icon="@mipmap/map"
         android:title="    计步器"/>
 

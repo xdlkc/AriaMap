@@ -3,10 +3,14 @@ package com.xidian.aria.ariamap;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.NavigationView;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -40,7 +44,6 @@ import com.baidu.mapapi.search.route.MassTransitRouteResult;
 import com.baidu.mapapi.search.route.OnGetRoutePlanResultListener;
 import com.baidu.mapapi.search.route.PlanNode;
 import com.baidu.mapapi.search.route.RoutePlanSearch;
-import com.baidu.mapapi.search.route.SuggestAddrInfo;
 import com.baidu.mapapi.search.route.TransitRoutePlanOption;
 import com.baidu.mapapi.search.route.TransitRouteResult;
 import com.baidu.mapapi.search.route.WalkingRoutePlanOption;
@@ -54,7 +57,6 @@ import com.xidian.aria.ariamap.overlayutil.DrivingRouteOverlay;
 import com.xidian.aria.ariamap.overlayutil.OverlayManager;
 import com.xidian.aria.ariamap.overlayutil.TransitRouteOverlay;
 import com.xidian.aria.ariamap.overlayutil.WalkingRouteOverlay;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -78,11 +80,15 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
     private FloatingActionButton heatBtn = null;
     // 交通图按钮
     private FloatingActionButton trafficBtn = null;
-
+    // 放大按钮
     private Button plusBtn = null;
+    // 缩小按钮
     private Button minusBtn = null;
+    // 周边按钮 todo:未完成
     private Button nearBtn = null;
+    // 导航按钮 todo:进行中
     private Button navBtn = null;
+    // 路线按钮
     private Button wayBtn = null;
     // 中心点
     private LatLng centerPoint = null;
@@ -90,19 +96,27 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
     private String city = null;
     //当前地图缩放级别
     private int zoomLevel = 14;
+    // 地点自动补全
     private AutoCompleteTextView enAutoTw =null;
     private List<String> suggest;
     private SuggestionSearch mSuggestionSearch = null;
-    ArrayAdapter<String> sugAdapter;
+    private ArrayAdapter<String> sugAdapter;
 
-    WalkingRouteResult mWalkRes = null;
-    BikingRouteResult mBikeRes = null;
-    TransitRouteResult mTransitRes = null;
-    DrivingRouteResult mDriveRes = null;
-    MassTransitRouteResult mMassRes = null;
-    RouteLine route = null;
-    OverlayManager routeOverlay = null;
-
+    // 步行线路检索结果
+    private WalkingRouteResult mWalkRes = null;
+    // 自行车线路检索结果
+    private BikingRouteResult mBikeRes = null;
+    // 公交线路检索结果
+    private TransitRouteResult mTransitRes = null;
+    // 驾车线路检索结果
+    private DrivingRouteResult mDriveRes = null;
+    // 跨城公交线路检索结果
+    private MassTransitRouteResult mMassRes = null;
+    // 显示的路线
+    private RouteLine route = null;
+    private OverlayManager routeOverlay = null;
+    // 侧边栏
+    private NavigationView navigationView = null;
     /**
      * 路线检索
      * @param way 交通方式
@@ -126,7 +140,7 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
     }
 
     /**
-     * 设置中心点
+     * 设置中心点，城市，缩放比例
      */
     public void setCenter(LatLng cenPoi,String city){
         this.centerPoint = cenPoi;
@@ -164,6 +178,22 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
         wayBtn = (Button) findViewById(R.id.way_btn);
         enAutoTw = (AutoCompleteTextView) findViewById(R.id.endAutoTw);
         mSuggestionSearch = SuggestionSearch.newInstance();
+        navigationView = (NavigationView) findViewById(R.id.user_nav);
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()){
+                    case R.id.bus_search_item:
+                        Intent intent = new Intent(getApplicationContext(),BusSearchActivity.class);
+                        intent.putExtra("city",city);
+                        startActivity(intent);
+                        break;
+                    default:
+                        break;
+                }
+                return true;
+            }
+        });
 
         initMap();
         initComponents();
@@ -189,6 +219,9 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
         mMapView.onPause();
     }
 
+    /**
+     * 定位回调
+     */
     public class MyLocationListener implements BDLocationListener {
         @Override
         public void onReceiveLocation(BDLocation location) {
@@ -199,7 +232,7 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
     }
 
     /**
-     * 初始化地图
+     * 初始化地图属性
      */
     private void initMap() {
         // 不显示缩放比例尺
@@ -213,17 +246,7 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
         MapStatus mMapStatus = new MapStatus.Builder().zoom(this.zoomLevel).build();
         MapStatusUpdate mMapStatusUpdate = MapStatusUpdateFactory.newMapStatus(mMapStatus);
         mBaiduMap.setMapStatus(mMapStatusUpdate);
-        mBaiduMap.setOnMapClickListener(new BaiduMap.OnMapClickListener() {
-            @Override
-            public void onMapClick(LatLng latLng) {
-
-            }
-
-            @Override
-            public boolean onMapPoiClick(MapPoi mapPoi) {
-                return false;
-            }
-        });
+        mBaiduMap.setOnMapClickListener(ShowMapActivity.this);
     }
 
     /**
@@ -235,7 +258,7 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
     }
 
     /**
-     * 初始化界面按钮控件
+     * 初始化界面控件及事件响应
      */
     private void initComponents(){
         // 设置提示开始长度
@@ -331,27 +354,41 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
      */
     private void initLocationTool(){
         locationListener = new MyLocationListener();
-        mLocationClient = new LocationClient(getApplicationContext());     //声明LocationClient类
-        mLocationClient.registerLocationListener(locationListener);    //注册监听函数
+        mLocationClient = new LocationClient(getApplicationContext());
+        mLocationClient.registerLocationListener(locationListener);
         LocationClientOption option = new LocationClientOption();
-        option.setLocationMode(LocationClientOption.LocationMode.Battery_Saving);//可选，默认高精度，设置定位模式，高精度，低功耗，仅设备
-        option.setCoorType("bd09ll");//可选，默认gcj02，设置返回的定位结果坐标系
+        // 设置定位模式，高精度，低功耗，仅设备
+        option.setLocationMode(LocationClientOption.LocationMode.Battery_Saving);
+        // 设置返回的定位结果坐标系
+        option.setCoorType("bd09ll");
         int span = 1000;
-        option.setScanSpan(span);//可选，默认0，即仅定位一次，设置发起定位请求的间隔需要大于等于1000ms才是有效的
-        option.setIsNeedAddress(true);//可选，设置是否需要地址信息，默认不需要
-        option.setOpenGps(true);//可选，默认false,设置是否使用gps
-        option.setLocationNotify(true);//可选，默认false，设置是否当GPS有效时按照1S/1次频率输出GPS结果
-        option.setIsNeedLocationDescribe(true);//可选，默认false，设置是否需要位置语义化结果，可以在BDLocation.getLocationDescribe里得到，结果类似于“在北京天安门附近”
-        option.setIsNeedLocationPoiList(true);//可选，默认false，设置是否需要POI结果，可以在BDLocation.getPoiList里得到
-        option.setIgnoreKillProcess(false);//可选，默认true，定位SDK内部是一个SERVICE，并放到了独立进程，设置是否在stop的时候杀死这个进程，默认不杀死
-        option.SetIgnoreCacheException(false);//可选，默认false，设置是否收集CRASH信息，默认收集
-        option.setEnableSimulateGps(false);//可选，默认false，设置是否需要过滤GPS仿真结果，默认需要
+        // 即仅定位一次，设置发起定位请求的间隔需要大于等于1000ms才是有效的
+        option.setScanSpan(span);
+        // 设置是否需要地址信息，默认不需要
+        option.setIsNeedAddress(true);
+        // 设置是否使用gps
+        option.setOpenGps(true);
+        // 设置是否当GPS有效时按照1S/1次频率输出GPS结果
+        option.setLocationNotify(true);
+        // 设置是否需要位置语义化结果，可以在BDLocation.getLocationDescribe里得到，结果类似于“在北京天安门附近”
+        option.setIsNeedLocationDescribe(true);
+        // 设置是否需要POI结果，可以在BDLocation.getPoiList里得到
+        option.setIsNeedLocationPoiList(true);
+        // 定位SDK内部是一个SERVICE，并放到了独立进程，设置是否在stop的时候杀死这个进程，默认不杀死
+        option.setIgnoreKillProcess(false);
+        // 设置是否收集CRASH信息，默认收集
+        option.SetIgnoreCacheException(false);
+        // 设置是否需要过滤GPS仿真结果，默认需要
+        option.setEnableSimulateGps(false);
         mLocationClient.setLocOption(option);
         //开启定位
         mLocationClient.start();
 
     }
 
+    /**
+     * 初始化地点提示部分
+     */
     public void initSearchComplete(){
         OnGetSuggestionResultListener listener = new OnGetSuggestionResultListener() {
             public void onGetSuggestionResult(SuggestionResult res) {
@@ -373,6 +410,10 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
         mSuggestionSearch.setOnGetSuggestionResultListener(listener);
     }
 
+    /**
+     * 步行路线回调
+     * @param result
+     */
     @Override
     public void onGetWalkingRouteResult(WalkingRouteResult result) {
         if (result == null || result.error != SearchResult.ERRORNO.NO_ERROR) {
@@ -383,6 +424,7 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
             // result.getSuggestAddrInfo()
             return;
         }else {
+            mBaiduMap.clear();
             mWalkRes = result;
             route = result.getRouteLines().get(0);
             WalkingRouteOverlay overlay = new MyWalkingRouteOverlay(mBaiduMap);
@@ -392,9 +434,12 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
             overlay.zoomToSpan();
         }
 
-
     }
 
+    /**
+     * 公交路线回调
+     * @param result
+     */
     @Override
     public void onGetTransitRouteResult(TransitRouteResult result) {
 
@@ -406,6 +451,7 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
             // result.getSuggestAddrInfo()
             return;
         }else {
+            mBaiduMap.clear();
             mTransitRes = result;
             route = result.getRouteLines().get(0);
             TransitRouteOverlay overlay = new MyTransitRouteOverlay(mBaiduMap);
@@ -416,6 +462,10 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
         }
     }
 
+    /**
+     * 跨城公交路线回调
+     * @param result
+     */
     @Override
     public void onGetMassTransitRouteResult(MassTransitRouteResult result) {
         if (result == null || result.error != SearchResult.ERRORNO.NO_ERROR) {
@@ -428,7 +478,10 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
         }
     }
 
-
+    /**
+     * 驾车路线回调
+     * @param result
+     */
     @Override
     public void onGetDrivingRouteResult(DrivingRouteResult result) {
         if (result == null || result.error != SearchResult.ERRORNO.NO_ERROR) {
@@ -449,11 +502,19 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
         }
     }
 
+    /**
+     * 室内路线回调
+     * @param indoorRouteResult
+     */
     @Override
     public void onGetIndoorRouteResult(IndoorRouteResult indoorRouteResult) {
 
     }
 
+    /**
+     * 自行车路线回调
+     * @param result
+     */
     @Override
     public void onGetBikingRouteResult(BikingRouteResult result) {
         if (result == null || result.error != SearchResult.ERRORNO.NO_ERROR) {
@@ -476,15 +537,33 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
         }
     }
 
+    /**
+     * 地图单击事件
+     * @param point
+     */
     @Override
     public void onMapClick(LatLng point) {
+        System.out.println("mapClick");
         mBaiduMap.hideInfoWindow();
+        mBaiduMap.clear();
+        BitmapDescriptor descriptor = BitmapDescriptorFactory.fromResource(R.drawable.icon_marka);
+        OverlayOptions options = new MarkerOptions().position(point).icon(descriptor);
+        mBaiduMap.addOverlay(options);
     }
 
+    /**
+     * 地图上的点的单击事件
+     * @param poi
+     * @return
+     */
     @Override
     public boolean onMapPoiClick(MapPoi poi) {
-        return false;
+        mBaiduMap.hideInfoWindow();
+        mBaiduMap.clear();
+        BitmapDescriptor descriptor = BitmapDescriptorFactory.fromResource(R.drawable.icon_marka);
+        OverlayOptions options = new MarkerOptions().position(poi.getPosition()).icon(descriptor);
+        mBaiduMap.addOverlay(options);
+        return true;
     }
-
 
 }
