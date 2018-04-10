@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="spingarr">
+        <item>推荐路线</item>
+        <item>最短时间</item>
+        <item>最短路径</item>
+    </string-array>
+</resources>

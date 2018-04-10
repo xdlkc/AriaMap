@@ -323,7 +323,7 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
         minusBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (zoomLevel > 0){
+                if (zoomLevel > 1 ){
                     zoomLevel -= 1;
                 }
                 MapStatus mMapStatus = new MapStatus.Builder().zoom(zoomLevel).build();

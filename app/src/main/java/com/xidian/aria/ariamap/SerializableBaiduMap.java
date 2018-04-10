@@ -10,10 +10,6 @@ import com.baidu.mapapi.search.route.WalkingRouteResult;
 
 import java.io.Serializable;
 
-/**
- * Created by lkc on 18-3-23.
- */
-
 public class SerializableBaiduMap implements Serializable {
     private BaiduMap baiduMap;
     // 步行线路检索结果
@@ -32,7 +28,24 @@ public class SerializableBaiduMap implements Serializable {
     private LatLng center;
     private int zoomLevel;
     // todo：构造方法没有写
+    private String start;
+    private String end;
 
+    public void setStart(String start) {
+        this.start = start;
+    }
+
+    public void setEnd(String end) {
+        this.end = end;
+    }
+
+    public String getStart() {
+        return start;
+    }
+
+    public String getEnd() {
+        return end;
+    }
 
     public SerializableBaiduMap(WalkingRouteResult mWalkRes, TransitRouteResult mTransitRes, DrivingRouteResult mDriveRes, String city, LatLng center, int zoomLevel) {
         this.mWalkRes = mWalkRes;
@@ -44,6 +57,7 @@ public class SerializableBaiduMap implements Serializable {
     }
 
     public void setBaiduMap(BaiduMap baiduMap) {
+
         this.baiduMap = baiduMap;
     }
 
