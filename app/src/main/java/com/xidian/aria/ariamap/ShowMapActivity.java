@@ -10,6 +10,8 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -193,6 +195,7 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
                 }
                 return true;
             }
+
         });
 
         initMap();
@@ -200,7 +203,48 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
         initSearchTool();
         initLocationTool();
         initSearchComplete();
+
     }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.new_menu, menu);
+        return true;
+    }
+
+    //menu跳转相应的页面   改动
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.subway:
+                Toast.makeText(getApplicationContext(), R.string.subway_menu, Toast.LENGTH_SHORT).show();
+
+                break;
+            case R.id.wallet:
+                Toast.makeText(getApplicationContext(), R.string.wallet_menu, Toast.LENGTH_SHORT).show();
+
+                break;
+            case R.id.bus_search_item:
+                Toast.makeText(getApplicationContext(), R.string.bus_search_menu, Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.history:
+                Toast.makeText(getApplicationContext(), R.string.history_menu, Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.step_item:
+                Toast.makeText(getApplicationContext(), R.string.step_menu, Toast.LENGTH_SHORT).show();
+                break;
+        }
+        return false;
+    }
+
+
+
+
+
+
+
+
+
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -331,7 +375,7 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
                 mBaiduMap.setMapStatus(mMapStatusUpdate);
             }
         });
-
+//改动
         wayBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -342,7 +386,10 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
                 }else {
                     PlanNode stNode = PlanNode.withLocation(centerPoint);
                     PlanNode enNode = PlanNode.withCityNameAndPlaceName(city,endStr);
-                    search(TrafficWay.getByWay("driving"),stNode,enNode);
+                    Intent intent = new Intent(ShowMapActivity.this,RouteResultActivity.class);
+                    startActivity(intent);
+                /*    search(TrafficWay.getByWay("driving"),stNode,enNode);*/
+
                 }
             }
         });

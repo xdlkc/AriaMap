@@ -8,6 +8,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -17,6 +19,8 @@ import com.baidu.mapapi.map.MapStatusUpdate;
 import com.baidu.mapapi.map.MapStatusUpdateFactory;
 import com.baidu.mapapi.map.MapView;
 import com.baidu.mapapi.model.LatLng;
+import com.baidu.mapapi.search.core.RouteNode;
+import com.baidu.mapapi.search.core.SearchResult;
 import com.baidu.mapapi.search.route.BikingRouteResult;
 import com.baidu.mapapi.search.route.DrivingRouteLine;
 import com.baidu.mapapi.search.route.DrivingRoutePlanOption;
@@ -26,11 +30,13 @@ import com.baidu.mapapi.search.route.MassTransitRouteResult;
 import com.baidu.mapapi.search.route.OnGetRoutePlanResultListener;
 import com.baidu.mapapi.search.route.PlanNode;
 import com.baidu.mapapi.search.route.RoutePlanSearch;
+import com.baidu.mapapi.search.route.TransitRouteLine;
 import com.baidu.mapapi.search.route.TransitRoutePlanOption;
 import com.baidu.mapapi.search.route.TransitRouteResult;
 import com.baidu.mapapi.search.route.WalkingRouteLine;
 import com.baidu.mapapi.search.route.WalkingRouteResult;
 import com.xidian.aria.ariamap.overlayutil.DrivingRouteOverlay;
+import com.xidian.aria.ariamap.overlayutil.TransitRouteOverlay;
 import com.xidian.aria.ariamap.overlayutil.WalkingRouteOverlay;
 import java.util.ArrayList;
 import java.util.List;
@@ -54,12 +60,17 @@ public class RouteResultActivity extends AppCompatActivity {
     // 驾车线路检索结果
     private DrivingRouteResult mDriveRes = null;
     // 驾车路线
-
     DrivingRouteLine drivingRoute = null;
     // 步行路线
     WalkingRouteLine walkingRoute = null;
+    TransitRouteLine transitRouteLine = null;
+
+    private BaiduMap mBaiduMap = null;
     private String start;
     private String end;
+
+    private String[] data={"路线1","路线2","路线3"};
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,8 +86,25 @@ public class RouteResultActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Toast toast = Toast.makeText(getApplicationContext(),i,Toast.LENGTH_LONG);
                 toast.show();
+                initBusRes(i);
+                List<TransitRouteLine> transitRouteLines = mTransitRes.getRouteLines();
+                for (TransitRouteLine line : transitRouteLines){
+                    List<TransitRouteLine.TransitStep> steps = line.getAllStep();
+                    for (TransitRouteLine.TransitStep step : steps){
+                        System.out.println(step.getInstructions());
+                    }
+                    System.out.println(line.getAllStep());
+                }
             }
         });
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(
+                RouteResultActivity.this, android.R.layout.simple_list_item_1, data);
+        ListView listView = (ListView) findViewById(R.id.bus_list);
+        listView.setAdapter(adapter);
+
+
+
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
@@ -97,7 +125,12 @@ public class RouteResultActivity extends AppCompatActivity {
         initViewPager();
         initIntentData();
         initDriveRes();
+
+
         initBusRes(0);
+
+
+
         initWalkRes();
     }
 
@@ -170,10 +203,7 @@ public class RouteResultActivity extends AppCompatActivity {
     /**
      * 初始化公交路线
      */
-   DrivingRoutePlanOption.DrivingPolicy ECAR_DIS_FIRST;
-   DrivingRoutePlanOption.DrivingPolicy ECAR_TIME_FIRST;
    public void initBusRes(int way){
-       // todo:等待公交线路布局页面完
        TransitRoutePlanOption option = new TransitRoutePlanOption();
        switch (way){
            case 0:
@@ -194,10 +224,29 @@ public class RouteResultActivity extends AppCompatActivity {
            public void onGetWalkingRouteResult(WalkingRouteResult walkingRouteResult) {
 
            }
-
+//改动
            @Override
            public void onGetTransitRouteResult(TransitRouteResult transitRouteResult) {
-
+               if (transitRouteResult == null || transitRouteResult.error != SearchResult.ERRORNO.NO_ERROR) {
+                   //未找到结果
+                   return;
+               }
+               if (transitRouteResult.error == SearchResult.ERRORNO.AMBIGUOUS_ROURE_ADDR) {
+                   //起终点或途经点地址有岐义，通过以下接口获取建议查询信息
+                   //result.getSuggestAddrInfo()
+                   return;
+               }
+               if (transitRouteResult.error == SearchResult.ERRORNO.NO_ERROR) {
+                   transitRouteLine = transitRouteResult.getRouteLines().get(0);
+                   //创建公交路线规划线路覆盖物
+                   //                   改动
+                   TransitRouteOverlay overlay = new MyTransitRouteOverlay(mBaiduMap);
+                   //设置公交路线规划数据
+                   overlay.setData(transitRouteLine);
+                   //将公交路线规划覆盖物添加到地图中
+                   overlay.addToMap();
+                   overlay.zoomToSpan();
+               }
            }
 
            @Override
@@ -224,10 +273,5 @@ public class RouteResultActivity extends AppCompatActivity {
        PlanNode endNode = PlanNode.withCityNameAndPlaceName(city,end);
        search.transitSearch(option.from(startNode).to(endNode).city(city));
     }
-
-
-
-
-
 
 }

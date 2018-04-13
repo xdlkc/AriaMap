@@ -1,33 +1,24 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-
-    <item
-        android:id="@+id/map"
-        android:icon="@mipmap/map"
-        android:title="    地图"/>
     <item
         android:id="@+id/subway"
         android:icon="@mipmap/map"
-        android:title="    地铁路线图"/>
-    <item
-        android:id="@+id/scene"
-        android:icon="@mipmap/map"
-        android:title="    实景导航"/>
+        android:title="@string/subway_menu"/>
     <item
         android:id="@+id/wallet"
         android:icon="@mipmap/map"
-        android:title="    收藏夹"/>
+        android:title="@string/wallet_menu"/>
     <item
         android:id="@+id/bus_search_item"
         android:icon="@mipmap/map"
-        android:title="    公交线路查询"/>
+        android:title="@string/bus_search_menu"/>
     <item
-        android:id="@+id/bus_item"
+        android:id="@+id/history"
         android:icon="@mipmap/map"
-        android:title="    实时公交"/>
+        android:title="@string/history_menu"/>
     <item
         android:id="@+id/step_item"
         android:icon="@mipmap/map"
-        android:title="    计步器"/>
+        android:title="@string/step_menu"/>
 
 </menu>
