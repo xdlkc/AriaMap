@@ -13,7 +13,7 @@
         android:icon="@mipmap/map"
         android:title="@string/bus_search_menu"/>
     <item
-        android:id="@+id/history"
+        android:id="@+id/history_today"
         android:icon="@mipmap/map"
         android:title="@string/history_menu"/>
     <item

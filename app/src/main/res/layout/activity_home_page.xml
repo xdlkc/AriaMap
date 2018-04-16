@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     >
 <EditText
-    android:id="@+id/start"
+    android:id="@+id/stNode"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:inputType="text"
@@ -12,7 +12,7 @@
 
     />
     <EditText
-        android:id="@+id/end"
+        android:id="@+id/enNode"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="点击设置终点位置"

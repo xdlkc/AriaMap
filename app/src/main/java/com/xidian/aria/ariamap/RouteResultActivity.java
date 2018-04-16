@@ -12,18 +12,15 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
-
 import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.MapStatus;
 import com.baidu.mapapi.map.MapStatusUpdate;
 import com.baidu.mapapi.map.MapStatusUpdateFactory;
 import com.baidu.mapapi.map.MapView;
 import com.baidu.mapapi.model.LatLng;
-import com.baidu.mapapi.search.core.RouteNode;
 import com.baidu.mapapi.search.core.SearchResult;
 import com.baidu.mapapi.search.route.BikingRouteResult;
 import com.baidu.mapapi.search.route.DrivingRouteLine;
-import com.baidu.mapapi.search.route.DrivingRoutePlanOption;
 import com.baidu.mapapi.search.route.DrivingRouteResult;
 import com.baidu.mapapi.search.route.IndoorRouteResult;
 import com.baidu.mapapi.search.route.MassTransitRouteResult;
@@ -35,6 +32,9 @@ import com.baidu.mapapi.search.route.TransitRoutePlanOption;
 import com.baidu.mapapi.search.route.TransitRouteResult;
 import com.baidu.mapapi.search.route.WalkingRouteLine;
 import com.baidu.mapapi.search.route.WalkingRouteResult;
+import com.xidian.aria.ariamap.overlays.MyDrivingRouteOverlay;
+import com.xidian.aria.ariamap.overlays.MyTransitRouteOverlay;
+import com.xidian.aria.ariamap.overlays.MyWalkingRouteOverlay;
 import com.xidian.aria.ariamap.overlayutil.DrivingRouteOverlay;
 import com.xidian.aria.ariamap.overlayutil.TransitRouteOverlay;
 import com.xidian.aria.ariamap.overlayutil.WalkingRouteOverlay;
@@ -59,18 +59,17 @@ public class RouteResultActivity extends AppCompatActivity {
     private TransitRouteResult mTransitRes = null;
     // 驾车线路检索结果
     private DrivingRouteResult mDriveRes = null;
+    private BikingRouteResult mBikeRes = null;
+    private MassTransitRouteResult mMassRes = null;
     // 驾车路线
     DrivingRouteLine drivingRoute = null;
     // 步行路线
     WalkingRouteLine walkingRoute = null;
     TransitRouteLine transitRouteLine = null;
-
     private BaiduMap mBaiduMap = null;
-    private String start;
-    private String end;
-
+    private PlanNode stNode;
+    private PlanNode enNode;
     private String[] data={"路线1","路线2","路线3"};
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,8 +102,6 @@ public class RouteResultActivity extends AppCompatActivity {
         ListView listView = (ListView) findViewById(R.id.bus_list);
         listView.setAdapter(adapter);
 
-
-
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
@@ -125,12 +122,7 @@ public class RouteResultActivity extends AppCompatActivity {
         initViewPager();
         initIntentData();
         initDriveRes();
-
-
         initBusRes(0);
-
-
-
         initWalkRes();
     }
 
@@ -152,7 +144,7 @@ public class RouteResultActivity extends AppCompatActivity {
 
     public void initViewPager(){
         List<View> viewList = new ArrayList<>();
-        LayoutInflater inflater = getLayoutInflater().from(this);
+        LayoutInflater inflater = getLayoutInflater();
         MapView driveView = (MapView) inflater.inflate(R.layout.pager_drive_page,null);
         View busView = inflater.inflate(R.layout.pager_bus_page,null);
         MapView walkView = (MapView) inflater.inflate(R.layout.pager_walk_page,null);
@@ -176,7 +168,11 @@ public class RouteResultActivity extends AppCompatActivity {
         zoomLevel = serializableBaiduMap.getZoomLevel();
         mDriveRes = serializableBaiduMap.getmDriveRes();
         mWalkRes = serializableBaiduMap.getmWalkRes();
-        mTransitRes = serializableBaiduMap.getmTransitRes();//
+        mTransitRes = serializableBaiduMap.getmTransitRes();
+        mBikeRes = serializableBaiduMap.getmBikeRes();
+        mMassRes = serializableBaiduMap.getmMassRes();
+        stNode = serializableBaiduMap.getStNode();
+        enNode = serializableBaiduMap.getEnNode();
     }
 
     /**
@@ -269,9 +265,7 @@ public class RouteResultActivity extends AppCompatActivity {
 
            }
        });
-       PlanNode startNode = PlanNode.withCityNameAndPlaceName(city,start);
-       PlanNode endNode = PlanNode.withCityNameAndPlaceName(city,end);
-       search.transitSearch(option.from(startNode).to(endNode).city(city));
+       search.transitSearch(option.from(stNode).to(enNode).city(city));
     }
 
 }

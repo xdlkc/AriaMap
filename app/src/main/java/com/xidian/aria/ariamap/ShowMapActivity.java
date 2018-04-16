@@ -1,9 +1,12 @@
 package com.xidian.aria.ariamap;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -11,7 +14,6 @@ import android.support.design.widget.NavigationView;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -55,6 +57,9 @@ import com.baidu.mapapi.search.sug.SuggestionResult;
 import com.baidu.mapapi.search.sug.SuggestionSearch;
 import com.baidu.mapapi.search.sug.SuggestionSearchOption;
 import com.xidian.aria.ariamap.enums.TrafficWay;
+import com.xidian.aria.ariamap.overlays.MyDrivingRouteOverlay;
+import com.xidian.aria.ariamap.overlays.MyTransitRouteOverlay;
+import com.xidian.aria.ariamap.overlays.MyWalkingRouteOverlay;
 import com.xidian.aria.ariamap.overlayutil.DrivingRouteOverlay;
 import com.xidian.aria.ariamap.overlayutil.OverlayManager;
 import com.xidian.aria.ariamap.overlayutil.TransitRouteOverlay;
@@ -140,6 +145,30 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
                 break;
         }
     }
+    public void getPermission(){
+        Context context = getApplicationContext();
+        if (context.checkSelfPermission(Manifest.permission.READ_SYNC_SETTINGS) != PackageManager.PERMISSION_GRANTED){
+            String [] permissions = new String[]{Manifest.permission.READ_SYNC_SETTINGS,Manifest.permission.WRITE_SETTINGS
+                    ,Manifest.permission.ACCESS_COARSE_LOCATION,Manifest.permission.ACCESS_FINE_LOCATION
+                    ,Manifest.permission.ACCESS_WIFI_STATE,Manifest.permission.ACCESS_NETWORK_STATE
+                    ,Manifest.permission.CHANGE_WIFI_STATE,Manifest.permission.READ_PHONE_STATE
+                    ,Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.INTERNET
+                    ,Manifest.permission.MOUNT_UNMOUNT_FILESYSTEMS};
+            requestPermissions(permissions,1);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode){
+            case 1:
+                break;
+            default:
+                Toast.makeText(getApplicationContext(),"未获取到权限！",Toast.LENGTH_LONG).show();
+                break;
+        }
+    }
 
     /**
      * 设置中心点，城市，缩放比例
@@ -166,6 +195,7 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getPermission();
         SDKInitializer.initialize(getApplicationContext());
         setContentView(R.layout.activity_show_map);
         mMapView = (MapView) findViewById(R.id.bmapView);
@@ -226,7 +256,7 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
             case R.id.bus_search_item:
                 Toast.makeText(getApplicationContext(), R.string.bus_search_menu, Toast.LENGTH_SHORT).show();
                 break;
-            case R.id.history:
+            case R.id.history_today:
                 Toast.makeText(getApplicationContext(), R.string.history_menu, Toast.LENGTH_SHORT).show();
                 break;
             case R.id.step_item:
@@ -235,15 +265,6 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
         }
         return false;
     }
-
-
-
-
-
-
-
-
-
 
     @Override
     protected void onDestroy() {
@@ -387,6 +408,9 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
                     PlanNode stNode = PlanNode.withLocation(centerPoint);
                     PlanNode enNode = PlanNode.withCityNameAndPlaceName(city,endStr);
                     Intent intent = new Intent(ShowMapActivity.this,RouteResultActivity.class);
+                    SerializableBaiduMap serializableBaiduMap = new SerializableBaiduMap(mBaiduMap,mWalkRes,mBikeRes,mTransitRes,mDriveRes,mMassRes
+                            ,city,centerPoint,zoomLevel,stNode,enNode);
+                    intent.putExtra("map",serializableBaiduMap);
                     startActivity(intent);
                 /*    search(TrafficWay.getByWay("driving"),stNode,enNode);*/
 
@@ -580,7 +604,6 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
                 }
             });
             builder.create().show();
-            return;
         }
     }
 

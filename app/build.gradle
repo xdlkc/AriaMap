@@ -2,6 +2,14 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 26
+    splits {
+        abi {
+            enable true
+            reset()
+            include 'x86', 'armeabi-v7a', 'x86_64'
+            universalApk true
+        }
+    }
     defaultConfig {
         applicationId "com.xidian.aria.ariamap"
         minSdkVersion 23
@@ -16,6 +24,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
 }
 
 dependencies {
