@@ -211,6 +211,7 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
         enAutoTw = (AutoCompleteTextView) findViewById(R.id.endAutoTw);
         mSuggestionSearch = SuggestionSearch.newInstance();
         navigationView = (NavigationView) findViewById(R.id.user_nav);
+
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -219,6 +220,20 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
                         Intent intent = new Intent(getApplicationContext(),BusSearchActivity.class);
                         intent.putExtra("city",city);
                         startActivity(intent);
+                        break;
+                    case R.id.subway:
+                        Toast.makeText(getApplicationContext(), R.string.subway_menu, Toast.LENGTH_SHORT).show();
+
+                        break;
+                    case R.id.wallet:
+                        Toast.makeText(getApplicationContext(), R.string.wallet_menu, Toast.LENGTH_SHORT).show();
+
+                        break;
+                    case R.id.history_today:
+                        Toast.makeText(getApplicationContext(), R.string.history_menu, Toast.LENGTH_SHORT).show();
+                        break;
+                    case R.id.step_item:
+                        Toast.makeText(getApplicationContext(), R.string.step_menu, Toast.LENGTH_SHORT).show();
                         break;
                     default:
                         break;
@@ -239,32 +254,6 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.new_menu, menu);
         return true;
-    }
-
-    //menu跳转相应的页面   改动
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.subway:
-                Toast.makeText(getApplicationContext(), R.string.subway_menu, Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(ShowMapActivity.this,SubwayActivity.class);
-                startActivity(intent);
-                break;
-            case R.id.wallet:
-                Toast.makeText(getApplicationContext(), R.string.wallet_menu, Toast.LENGTH_SHORT).show();
-
-                break;
-            case R.id.bus_search_item:
-                Toast.makeText(getApplicationContext(), R.string.bus_search_menu, Toast.LENGTH_SHORT).show();
-                break;
-            case R.id.history_today:
-                Toast.makeText(getApplicationContext(), R.string.history_menu, Toast.LENGTH_SHORT).show();
-                break;
-            case R.id.step_item:
-                Toast.makeText(getApplicationContext(), R.string.step_menu, Toast.LENGTH_SHORT).show();
-                break;
-        }
-        return false;
     }
 
     @Override
