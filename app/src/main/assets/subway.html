@@ -16,8 +16,9 @@
 <div id="container">
 </div>
 <script type="text/javascript">
-    var subwayCityName;
-    subwayCityName  = window.android.getCityName;
+function showSubway(){
+  var subwayCityName;
+    subwayCityName  = window.android.startFunction;
     if (subwayCityName === ""){
             subwayCityName = "西安";
     }else{}
@@ -32,6 +33,8 @@
     }
     var subway = new BMapSub.Subway('container', subwaycity.citycode);
     subway.setZoom(0.5);
+}
+
 </script>
 </body>
 </html>

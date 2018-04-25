@@ -125,6 +125,7 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
     private OverlayManager routeOverlay = null;
     // 侧边栏
     private NavigationView navigationView = null;
+    BitmapDescriptor bitmap ;
     /**
      * 路线检索
      * @param way 交通方式
@@ -186,7 +187,7 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
         MapStatusUpdate mMapStatusUpdate = MapStatusUpdateFactory.newMapStatus(mMapStatus);
         //改变地图状态
         mBaiduMap.setMapStatus(mMapStatusUpdate);
-        BitmapDescriptor bitmap = BitmapDescriptorFactory.fromResource(R.drawable.icon_marka);
+        System.out.println(bitmap);
         OverlayOptions option = new MarkerOptions()
                 .position(this.centerPoint).icon(bitmap);
         mBaiduMap.addOverlay(option);
@@ -198,6 +199,7 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
         getPermission();
         SDKInitializer.initialize(getApplicationContext());
         setContentView(R.layout.activity_show_map);
+        bitmap = BitmapDescriptorFactory.fromResource(R.drawable.icon_markb);
         mMapView = (MapView) findViewById(R.id.bmapView);
         userBtn = (ImageButton) findViewById(R.id.user_btn);
         satelliteBtn = (FloatingActionButton) findViewById(R.id.satellite_btn);
@@ -215,15 +217,17 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                Intent intent;
                 switch (item.getItemId()){
                     case R.id.bus_search_item:
-                        Intent intent = new Intent(getApplicationContext(),BusSearchActivity.class);
+                        intent = new Intent(getApplicationContext(),BusSearchActivity.class);
                         intent.putExtra("city",city);
                         startActivity(intent);
                         break;
                     case R.id.subway:
-                        Toast.makeText(getApplicationContext(), R.string.subway_menu, Toast.LENGTH_SHORT).show();
-
+                        intent = new Intent(getApplicationContext(),SubwayActivity.class);
+                        intent.putExtra("city",city);
+                        startActivity(intent);
                         break;
                     case R.id.wallet:
                         Toast.makeText(getApplicationContext(), R.string.wallet_menu, Toast.LENGTH_SHORT).show();
