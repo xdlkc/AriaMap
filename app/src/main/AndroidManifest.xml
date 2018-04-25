@@ -48,7 +48,7 @@
 
         <meta-data
             android:name="com.baidu.lbsapi.API_KEY"
-            android:value="HsM7LUKpgk4vgOewGYvHqgB5LPp8ciUu" />
+            android:value="d521WulfOyVh5H5TuNMqjqvxnXgWiSKH" />
 
         <activity android:name=".ShowMapActivity">
             <intent-filter>
