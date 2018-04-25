@@ -8,26 +8,24 @@
         android:orientation="vertical">
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:orientation="horizontal"
             android:layout_weight="2">
             <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="几种公交路线"
-                android:layout_weight="1"/>
+            android:text="几种公交路线"/>
 
             <Spinner
                 android:id="@+id/spDown"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:entries="@array/spingarr"></Spinner>
+                android:entries="@array/spingarr" />
         </LinearLayout>
 
         <ListView
             android:id="@+id/bus_list"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"></ListView>
+            android:layout_height="wrap_content" />
     </LinearLayout>
 </android.support.constraint.ConstraintLayout>

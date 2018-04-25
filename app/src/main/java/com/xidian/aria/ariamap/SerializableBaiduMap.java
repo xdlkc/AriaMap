@@ -5,6 +5,7 @@ import com.baidu.mapapi.model.LatLng;
 import com.baidu.mapapi.search.route.BikingRouteResult;
 import com.baidu.mapapi.search.route.DrivingRouteResult;
 import com.baidu.mapapi.search.route.MassTransitRouteResult;
+import com.baidu.mapapi.search.route.PlanNode;
 import com.baidu.mapapi.search.route.TransitRouteResult;
 import com.baidu.mapapi.search.route.WalkingRouteResult;
 
@@ -27,33 +28,50 @@ public class SerializableBaiduMap implements Serializable {
     // 中心点
     private LatLng center;
     private int zoomLevel;
-    // todo：构造方法没有写
-    private String start;
-    private String end;
+    private PlanNode stNode;
+    private PlanNode enNode;
 
-    public void setStart(String start) {
-        this.start = start;
+    public void setStNode(PlanNode stNode) {
+        this.stNode = stNode;
     }
 
-    public void setEnd(String end) {
-        this.end = end;
+    public void setEnNode(PlanNode enNode) {
+        this.enNode = enNode;
     }
 
-    public String getStart() {
-        return start;
+    public PlanNode getStNode() {
+
+        return stNode;
     }
 
-    public String getEnd() {
-        return end;
+    public PlanNode getEnNode() {
+        return enNode;
     }
 
-    public SerializableBaiduMap(WalkingRouteResult mWalkRes, TransitRouteResult mTransitRes, DrivingRouteResult mDriveRes, String city, LatLng center, int zoomLevel) {
+    public SerializableBaiduMap(WalkingRouteResult mWalkRes, TransitRouteResult mTransitRes, DrivingRouteResult mDriveRes,
+                                String city, LatLng center, int zoomLevel) {
         this.mWalkRes = mWalkRes;
         this.mTransitRes = mTransitRes;
         this.mDriveRes = mDriveRes;
         this.city = city;
         this.center = center;
         this.zoomLevel = zoomLevel;
+    }
+
+    public SerializableBaiduMap(BaiduMap baiduMap, WalkingRouteResult mWalkRes, BikingRouteResult mBikeRes, TransitRouteResult mTransitRes,
+                                DrivingRouteResult mDriveRes, MassTransitRouteResult mMassRes,
+                                String city, LatLng center, int zoomLevel, PlanNode stNode, PlanNode enNode) {
+        this.baiduMap = baiduMap;
+        this.mWalkRes = mWalkRes;
+        this.mBikeRes = mBikeRes;
+        this.mTransitRes = mTransitRes;
+        this.mDriveRes = mDriveRes;
+        this.mMassRes = mMassRes;
+        this.city = city;
+        this.center = center;
+        this.zoomLevel = zoomLevel;
+        this.stNode = stNode;
+        this.enNode = enNode;
     }
 
     public void setBaiduMap(BaiduMap baiduMap) {

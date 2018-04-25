@@ -27,4 +27,11 @@
     <string name="wallet_menu">收藏夹</string>
     <string name="bus_search_menu">公交线路查询</string>
     <string name="step_menu">计步器</string>
+    <string name="setting">设置</string>
+    <string name="input_end">输入目标位置</string>
+    <string name="plus">+</string>
+    <string name="minus">-</string>
+    <string name="near">周边</string>
+    <string name="route_nav">导航</string>
+    <string name="route">路线</string>
 </resources>
