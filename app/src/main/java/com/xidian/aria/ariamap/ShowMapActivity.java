@@ -1,3 +1,4 @@
+
 package com.xidian.aria.ariamap;
 
 import android.Manifest;
@@ -187,8 +188,7 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
         mBaiduMap.setMapStatus(mMapStatusUpdate);
         BitmapDescriptor bitmap = BitmapDescriptorFactory.fromResource(R.drawable.icon_marka);
         OverlayOptions option = new MarkerOptions()
-                .position(this.centerPoint)
-                .icon(bitmap);
+                .position(this.centerPoint).icon(bitmap);
         mBaiduMap.addOverlay(option);
     }
 
@@ -247,7 +247,8 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
         switch (item.getItemId()) {
             case R.id.subway:
                 Toast.makeText(getApplicationContext(), R.string.subway_menu, Toast.LENGTH_SHORT).show();
-
+                Intent intent = new Intent(ShowMapActivity.this,SubwayActivity.class);
+                startActivity(intent);
                 break;
             case R.id.wallet:
                 Toast.makeText(getApplicationContext(), R.string.wallet_menu, Toast.LENGTH_SHORT).show();
@@ -415,6 +416,19 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
                 /*    search(TrafficWay.getByWay("driving"),stNode,enNode);*/
 
                 }
+            }
+        });
+
+
+
+        //导航
+
+
+
+        navBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
             }
         });
 
@@ -637,3 +651,4 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
     }
 
 }
+//导航
