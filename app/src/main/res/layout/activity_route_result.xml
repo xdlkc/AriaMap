@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.xidian.aria.ariamap.RouteResultActivity"
+    android:orientation="horizontal">
+    <android.support.design.widget.TabLayout
+        android:id="@+id/route_tab"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+        <android.support.design.widget.TabItem
+            android:id="@+id/walk_item"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="步行"/>
+        <android.support.design.widget.TabItem
+            android:id="@+id/bus_item"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="公交"/>
+        <android.support.design.widget.TabItem
+            android:id="@+id/drive_item"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="驾车"/>
+    </android.support.design.widget.TabLayout>
+    <android.support.v4.view.ViewPager
+        android:id="@+id/route_view_pager"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"></android.support.v4.view.ViewPager>
+</LinearLayout>
