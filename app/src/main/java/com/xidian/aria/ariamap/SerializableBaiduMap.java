@@ -1,5 +1,8 @@
 package com.xidian.aria.ariamap;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.model.LatLng;
 import com.baidu.mapapi.search.route.BikingRouteResult;
@@ -11,7 +14,7 @@ import com.baidu.mapapi.search.route.WalkingRouteResult;
 
 import java.io.Serializable;
 
-public class SerializableBaiduMap implements Serializable {
+public class SerializableBaiduMap implements Parcelable {
     private BaiduMap baiduMap;
     // 步行线路检索结果
     private WalkingRouteResult mWalkRes = null;
@@ -28,39 +31,10 @@ public class SerializableBaiduMap implements Serializable {
     // 中心点
     private LatLng center;
     private int zoomLevel;
-    private PlanNode stNode;
-    private PlanNode enNode;
+    private LatLng  startPoi;
+    private LatLng endPoi;
 
-    public void setStNode(PlanNode stNode) {
-        this.stNode = stNode;
-    }
-
-    public void setEnNode(PlanNode enNode) {
-        this.enNode = enNode;
-    }
-
-    public PlanNode getStNode() {
-
-        return stNode;
-    }
-
-    public PlanNode getEnNode() {
-        return enNode;
-    }
-
-    public SerializableBaiduMap(WalkingRouteResult mWalkRes, TransitRouteResult mTransitRes, DrivingRouteResult mDriveRes,
-                                String city, LatLng center, int zoomLevel) {
-        this.mWalkRes = mWalkRes;
-        this.mTransitRes = mTransitRes;
-        this.mDriveRes = mDriveRes;
-        this.city = city;
-        this.center = center;
-        this.zoomLevel = zoomLevel;
-    }
-
-    public SerializableBaiduMap(BaiduMap baiduMap, WalkingRouteResult mWalkRes, BikingRouteResult mBikeRes, TransitRouteResult mTransitRes,
-                                DrivingRouteResult mDriveRes, MassTransitRouteResult mMassRes,
-                                String city, LatLng center, int zoomLevel, PlanNode stNode, PlanNode enNode) {
+    public SerializableBaiduMap(BaiduMap baiduMap, WalkingRouteResult mWalkRes, BikingRouteResult mBikeRes, TransitRouteResult mTransitRes, DrivingRouteResult mDriveRes, MassTransitRouteResult mMassRes, String city, LatLng center, int zoomLevel, LatLng startPoi, LatLng endPoi) {
         this.baiduMap = baiduMap;
         this.mWalkRes = mWalkRes;
         this.mBikeRes = mBikeRes;
@@ -70,8 +44,49 @@ public class SerializableBaiduMap implements Serializable {
         this.city = city;
         this.center = center;
         this.zoomLevel = zoomLevel;
-        this.stNode = stNode;
-        this.enNode = enNode;
+        this.startPoi = startPoi;
+        this.endPoi = endPoi;
+    }
+
+    protected SerializableBaiduMap(Parcel in) {
+        mWalkRes = in.readParcelable(WalkingRouteResult.class.getClassLoader());
+        mBikeRes = in.readParcelable(BikingRouteResult.class.getClassLoader());
+        mTransitRes = in.readParcelable(TransitRouteResult.class.getClassLoader());
+        mDriveRes = in.readParcelable(DrivingRouteResult.class.getClassLoader());
+        mMassRes = in.readParcelable(MassTransitRouteResult.class.getClassLoader());
+        city = in.readString();
+        center = in.readParcelable(LatLng.class.getClassLoader());
+        zoomLevel = in.readInt();
+        startPoi = in.readParcelable(LatLng.class.getClassLoader());
+        endPoi = in.readParcelable(LatLng.class.getClassLoader());
+    }
+
+    public static final Creator<SerializableBaiduMap> CREATOR = new Creator<SerializableBaiduMap>() {
+        @Override
+        public SerializableBaiduMap createFromParcel(Parcel in) {
+            return new SerializableBaiduMap(in);
+        }
+
+        @Override
+        public SerializableBaiduMap[] newArray(int size) {
+            return new SerializableBaiduMap[size];
+        }
+    };
+
+    public LatLng getStartPoi() {
+        return startPoi;
+    }
+
+    public void setStartPoi(LatLng startPoi) {
+        this.startPoi = startPoi;
+    }
+
+    public LatLng getEndPoi() {
+        return endPoi;
+    }
+
+    public void setEndPoi(LatLng endPoi) {
+        this.endPoi = endPoi;
     }
 
     public void setBaiduMap(BaiduMap baiduMap) {
@@ -146,5 +161,25 @@ public class SerializableBaiduMap implements Serializable {
 
     public void setZoomLevel(int zoomLevel) {
         this.zoomLevel = zoomLevel;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+
+        dest.writeParcelable(mWalkRes, flags);
+        dest.writeParcelable(mBikeRes, flags);
+        dest.writeParcelable(mTransitRes, flags);
+        dest.writeParcelable(mDriveRes, flags);
+        dest.writeParcelable(mMassRes, flags);
+        dest.writeString(city);
+        dest.writeParcelable(center, flags);
+        dest.writeInt(zoomLevel);
+        dest.writeParcelable(startPoi, flags);
+        dest.writeParcelable(endPoi, flags);
     }
 }

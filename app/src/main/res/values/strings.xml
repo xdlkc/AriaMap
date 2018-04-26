@@ -40,5 +40,8 @@
     <string name="cancel_fail">注销失败</string>
     <string name="account_empty">用户名不可为空</string>
     <string name="pwd_empty">密码为空</string>
+    <string name="walk">步行</string>
+    <string name="bus">公交</string>
+    <string name="drive">驾车</string>
 
 </resources>

@@ -7,8 +7,6 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.media.Image;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -18,6 +16,7 @@ import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -67,6 +66,7 @@ import com.xidian.aria.ariamap.overlayutil.DrivingRouteOverlay;
 import com.xidian.aria.ariamap.overlayutil.OverlayManager;
 import com.xidian.aria.ariamap.overlayutil.TransitRouteOverlay;
 import com.xidian.aria.ariamap.overlayutil.WalkingRouteOverlay;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -108,7 +108,8 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
     private int zoomLevel = 14;
     // 地点自动补全
     private AutoCompleteTextView enAutoTw =null;
-    private List<String> suggest;
+    private List<String> sugStr;
+    private List<LatLng> sugPois;
     private SuggestionSearch mSuggestionSearch = null;
     private ArrayAdapter<String> sugAdapter;
 
@@ -127,7 +128,8 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
     private OverlayManager routeOverlay = null;
     // 侧边栏
     private NavigationView navigationView = null;
-    BitmapDescriptor bitmap ;
+    private BitmapDescriptor bitmap ;
+    private LatLng endPoi;
     /**
      * 路线检索
      * @param way 交通方式
@@ -151,15 +153,13 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
     }
     public void getPermission(){
         Context context = getApplicationContext();
-        if (context.checkSelfPermission(Manifest.permission.READ_SYNC_SETTINGS) != PackageManager.PERMISSION_GRANTED){
-            String [] permissions = new String[]{Manifest.permission.READ_SYNC_SETTINGS,Manifest.permission.WRITE_SETTINGS
-                    ,Manifest.permission.ACCESS_COARSE_LOCATION,Manifest.permission.ACCESS_FINE_LOCATION
-                    ,Manifest.permission.ACCESS_WIFI_STATE,Manifest.permission.ACCESS_NETWORK_STATE
-                    ,Manifest.permission.CHANGE_WIFI_STATE,Manifest.permission.READ_PHONE_STATE
-                    ,Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.INTERNET
-                    ,Manifest.permission.MOUNT_UNMOUNT_FILESYSTEMS};
-            requestPermissions(permissions,1);
-        }
+        String [] permissions = new String[]{Manifest.permission.READ_SYNC_SETTINGS,Manifest.permission.WRITE_SETTINGS
+                ,Manifest.permission.ACCESS_COARSE_LOCATION,Manifest.permission.ACCESS_FINE_LOCATION
+                ,Manifest.permission.ACCESS_WIFI_STATE,Manifest.permission.ACCESS_NETWORK_STATE
+                ,Manifest.permission.CHANGE_WIFI_STATE,Manifest.permission.READ_PHONE_STATE
+                ,Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.INTERNET
+                ,Manifest.permission.MOUNT_UNMOUNT_FILESYSTEMS};
+        requestPermissions(permissions,1);
     }
 
     @Override
@@ -189,7 +189,6 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
         MapStatusUpdate mMapStatusUpdate = MapStatusUpdateFactory.newMapStatus(mMapStatus);
         //改变地图状态
         mBaiduMap.setMapStatus(mMapStatusUpdate);
-        System.out.println(bitmap);
         OverlayOptions option = new MarkerOptions()
                 .position(this.centerPoint).icon(bitmap);
         mBaiduMap.addOverlay(option);
@@ -355,6 +354,12 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
             public void afterTextChanged(Editable editable) {
             }
         });
+        enAutoTw.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                endPoi = sugPois.get(position);
+            }
+        });
         satelliteBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -412,14 +417,15 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
                     Toast toast = Toast.makeText(getApplicationContext(),"请输入目标位置！",Toast.LENGTH_SHORT);
                     toast.show();
                 }else {
-                    PlanNode stNode = PlanNode.withLocation(centerPoint);
-                    PlanNode enNode = PlanNode.withCityNameAndPlaceName(city,endStr);
-                    Intent intent = new Intent(getApplicationContext(),RouteResultActivity.class);
-                    SerializableBaiduMap serializableBaiduMap = new SerializableBaiduMap(mBaiduMap,mWalkRes,mBikeRes,mTransitRes,mDriveRes,mMassRes
-                            ,city,centerPoint,zoomLevel,stNode,enNode);
+                    System.out.println(endPoi);
+                    if (endPoi != null){
+                        Intent intent = new Intent(getApplicationContext(),RouteResultActivity.class);
+                        SerializableBaiduMap serializableBaiduMap = new SerializableBaiduMap(mBaiduMap,mWalkRes,mBikeRes,mTransitRes,mDriveRes,mMassRes
+                                ,city,centerPoint,zoomLevel,centerPoint,endPoi);
+                        intent.putExtra("map",serializableBaiduMap);
+                        startActivity(intent);
+                    }
 
-                    intent.putExtra("map",serializableBaiduMap);
-                    startActivity(intent);
                 /*    search(TrafficWay.getByWay("driving"),stNode,enNode);*/
 
                 }
@@ -488,12 +494,14 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
                     return ;
                     //未找到相关结果
                 }
-                suggest = new ArrayList<String>();
+                sugStr = new ArrayList<String>();
+                sugPois = new ArrayList<LatLng>();
                 for (SuggestionResult.SuggestionInfo info : res.getAllSuggestions()) {
                     if (info.key != null)
-                        suggest.add(info.key);
+                        sugStr.add(info.key);
+                        sugPois.add(info.pt);
                 }
-                sugAdapter = new ArrayAdapter<String>(ShowMapActivity.this, android.R.layout.simple_dropdown_item_1line, suggest);
+                sugAdapter = new ArrayAdapter<String>(ShowMapActivity.this, android.R.layout.simple_dropdown_item_1line, sugStr);
                 enAutoTw.setAdapter(sugAdapter);
                 sugAdapter.notifyDataSetChanged();
                 //获取在线建议检索结果
@@ -634,7 +642,6 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
      */
     @Override
     public void onMapClick(LatLng point) {
-        System.out.println("mapClick");
         mBaiduMap.hideInfoWindow();
         mBaiduMap.clear();
         BitmapDescriptor descriptor = BitmapDescriptorFactory.fromResource(R.drawable.icon_marka);

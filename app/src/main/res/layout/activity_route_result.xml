@@ -14,20 +14,20 @@
             android:id="@+id/walk_item"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="步行"/>
+            android:text="@string/walk"/>
         <android.support.design.widget.TabItem
             android:id="@+id/bus_item"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="公交"/>
+            android:text="@string/bus"/>
         <android.support.design.widget.TabItem
             android:id="@+id/drive_item"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="驾车"/>
+            android:text="@string/drive"/>
     </android.support.design.widget.TabLayout>
     <android.support.v4.view.ViewPager
         android:id="@+id/route_view_pager"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"></android.support.v4.view.ViewPager>
+        android:layout_height="wrap_content"/>
 </LinearLayout>
