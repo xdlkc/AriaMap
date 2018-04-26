@@ -25,14 +25,12 @@ public class SubwayActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_subway);
-
-
-
         webView = findViewById(R.id.webview);
-        webView.getSettings().setJavaScriptEnabled(true);
-        webView.setWebViewClient(new WebViewClient());
         webView.loadUrl("file:///android_assets/subway.html");
-        webView.addJavascriptInterface(SubwayActivity.this, "android");
+        webView.getSettings().setJavaScriptEnabled(true);
+//        webView.setWebViewClient(new WebViewClient());
+
+        webView.addJavascriptInterface(new JSClass(), "android");
         searchSub = findViewById(R.id.searchSub);
 
         searchSub.setOnClickListener(new View.OnClickListener() {
@@ -48,16 +46,10 @@ public class SubwayActivity extends AppCompatActivity {
 
     }
 
-    @JavascriptInterface
-    public void startFunction() {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                EditText subwayEdittext = findViewById(R.id.subwayEdittext);
-                String subwayCity = subwayEdittext.getText().toString();
-                System.out.println("fuck");
-            }
-        });
-
+    class JSClass{
+        @JavascriptInterface
+        public void showAndroid(){
+            Toast.makeText(SubwayActivity.this,"js调用了android的方法",Toast.LENGTH_SHORT).show();
+        }
     }
 }

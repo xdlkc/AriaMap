@@ -78,7 +78,7 @@
                 android:layout_width="17dp"
                 android:layout_height="17dp"
                 android:scaleType="fitXY"
-                android:src="@drawable/label"/>
+                android:src="@drawable/tap"/>
             <!--个人标签-->
             <TextView
                 android:layout_marginLeft="5dp"

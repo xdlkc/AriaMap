@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.media.Image;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -21,6 +22,7 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.baidu.location.BDLocation;
@@ -213,6 +215,17 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
         enAutoTw = (AutoCompleteTextView) findViewById(R.id.endAutoTw);
         mSuggestionSearch = SuggestionSearch.newInstance();
         navigationView = (NavigationView) findViewById(R.id.user_nav);
+        //登录
+        View drawview_head = navigationView.inflateHeaderView(R.layout.left_head_layout);
+        ImageView user_pic = (ImageView) drawview_head.findViewById(R.id.land);
+        user_pic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(),dengluActivity.class);
+                startActivity(intent);
+            }
+        });
+
 
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -401,9 +414,10 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
                 }else {
                     PlanNode stNode = PlanNode.withLocation(centerPoint);
                     PlanNode enNode = PlanNode.withCityNameAndPlaceName(city,endStr);
-                    Intent intent = new Intent(ShowMapActivity.this,RouteResultActivity.class);
+                    Intent intent = new Intent(getApplicationContext(),RouteResultActivity.class);
                     SerializableBaiduMap serializableBaiduMap = new SerializableBaiduMap(mBaiduMap,mWalkRes,mBikeRes,mTransitRes,mDriveRes,mMassRes
                             ,city,centerPoint,zoomLevel,stNode,enNode);
+
                     intent.putExtra("map",serializableBaiduMap);
                     startActivity(intent);
                 /*    search(TrafficWay.getByWay("driving"),stNode,enNode);*/

@@ -7,7 +7,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.example.foolishfan.user_v10.Login">
+    >
     <RelativeLayout
         android:id="@+id/login_view"
         android:layout_width="400dp"
@@ -16,32 +16,32 @@
         >
 
         <Button
-            android:layout_width="fill_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="注册"
             android:id="@+id/login_btn_register"
             android:onClick="resetpwd"
             android:textColor="#ffffff"
-            android:background="#e52525"
+            android:background="@color/lightgreen"
             android:textSize="20dp"
-            android:layout_below="@+id/login_btn_login"
+            android:layout_below="@+id/Login_Remember"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:layout_marginTop="10dp" />
+            android:layout_marginTop="30dp" />
 
         <Button
-            android:layout_width="fill_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="登录"
             android:id="@+id/login_btn_login"
             android:onClick="finish_login"
-            android:background="#545bcb"
+            android:background="@color/mediumturquoise"
             android:textSize="20dp"
             android:textColor="#ffffff"
-            android:layout_below="@+id/login_edit_pwd"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_marginTop="52dp" />
+
+            android:layout_centerHorizontal="true"
+            android:layout_below="@+id/Login_Remember"
+            android:layout_marginTop="30dp" />
 
         <ImageView
             android:layout_width="300dp"
@@ -53,7 +53,7 @@
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
             android:layout_alignWithParentIfMissing="false"
-            android:background="#ffffff" />
+            android:src="@drawable/user" />
 
         <EditText
             android:layout_width="400dp"
@@ -80,19 +80,17 @@
             android:layout_marginTop="20dp" />
 
         <Button
-            android:layout_width="fill_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="注销"
             android:id="@+id/login_btn_cancle"
             android:textSize="20dp"
-            android:layout_below="@+id/login_btn_register"
-            android:layout_marginTop="10dp"
+            android:layout_below="@+id/Login_Remember"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
+            android:layout_marginTop="30dp"
             android:textColor="#ffffff"
-            android:background="#3a1313" />
+            android:background="@color/lightcoral" />
 
         <CheckBox
             android:layout_width="100dp"
