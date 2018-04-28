@@ -51,15 +51,15 @@
 
                 <AutoCompleteTextView
                     android:id="@+id/endAutoTw"
-                    android:layout_width="270dp"
+                    android:layout_width="290dp"
                     android:layout_height="wrap_content"
                     android:singleLine="true"
                     android:completionThreshold="3"
                     android:hint="@string/input_end"/>
                 <ImageButton
                     android:id="@+id/voice_btn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="45dp"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
                     android:background="@drawable/voice"
                     android:contentDescription="@string/voice_input" />
             </LinearLayout>

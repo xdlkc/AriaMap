@@ -10,7 +10,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -42,8 +41,14 @@ import com.baidu.mapapi.search.sug.OnGetSuggestionResultListener;
 import com.baidu.mapapi.search.sug.SuggestionResult;
 import com.baidu.mapapi.search.sug.SuggestionSearch;
 import com.baidu.mapapi.search.sug.SuggestionSearchOption;
+import com.iflytek.cloud.InitListener;
+import com.iflytek.cloud.RecognizerResult;
+import com.iflytek.cloud.SpeechConstant;
+import com.iflytek.cloud.SpeechError;
+import com.iflytek.cloud.SpeechUtility;
+import com.iflytek.cloud.ui.RecognizerDialog;
+import com.iflytek.cloud.ui.RecognizerDialogListener;
 import com.xidian.aria.ariamap.parcelables.ParcelableMapData;
-import com.xidian.aria.ariamap.tests.TestActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -98,6 +103,10 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
     private BitmapDescriptor bitmap ;
     private LatLng endPoi;
 
+    // 语音
+    InitListener initListener;
+    // 录音框
+    RecognizerDialogListener recognizerDialogListener;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -120,6 +129,7 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
         mSuggestionSearch = SuggestionSearch.newInstance();
         navigationView = (NavigationView) findViewById(R.id.user_nav);
         initAfterPermission();
+        SpeechUtility.createUtility(this, SpeechConstant.APPID +"=5ae49d2d");
     }
 
     @Override
@@ -138,6 +148,33 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
     protected void onPause() {
         super.onPause();
         mMapView.onPause();
+    }
+    /**
+     * 地图单击事件
+     * @param point
+     */
+    @Override
+    public void onMapClick(LatLng point) {
+        mBaiduMap.hideInfoWindow();
+        mBaiduMap.clear();
+        BitmapDescriptor descriptor = BitmapDescriptorFactory.fromResource(R.drawable.icon_marka);
+        OverlayOptions options = new MarkerOptions().position(point).icon(descriptor);
+        mBaiduMap.addOverlay(options);
+    }
+
+    /**
+     * 地图上的点的单击事件
+     * @param poi
+     * @return
+     */
+    @Override
+    public boolean onMapPoiClick(MapPoi poi) {
+        mBaiduMap.hideInfoWindow();
+        mBaiduMap.clear();
+        BitmapDescriptor descriptor = BitmapDescriptorFactory.fromResource(R.drawable.icon_marka);
+        OverlayOptions options = new MarkerOptions().position(poi.getPosition()).icon(descriptor);
+        mBaiduMap.addOverlay(options);
+        return true;
     }
     public void initAfterPermission(){
         //登录
@@ -189,18 +226,14 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
         initLocationTool();
         initSearchComplete();
     }
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.new_menu, menu);
-        return true;
-    }
+
     public void getPermission(){
         String [] permissions = new String[]{Manifest.permission.READ_SYNC_SETTINGS,Manifest.permission.WRITE_SETTINGS
                 ,Manifest.permission.ACCESS_COARSE_LOCATION,Manifest.permission.ACCESS_FINE_LOCATION
                 ,Manifest.permission.ACCESS_WIFI_STATE,Manifest.permission.ACCESS_NETWORK_STATE
                 ,Manifest.permission.CHANGE_WIFI_STATE,Manifest.permission.READ_PHONE_STATE
                 ,Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.INTERNET
-                ,Manifest.permission.MOUNT_UNMOUNT_FILESYSTEMS};
+                ,Manifest.permission.MOUNT_UNMOUNT_FILESYSTEMS,Manifest.permission.RECORD_AUDIO};
         requestPermissions(permissions,1);
     }
 
@@ -300,8 +333,7 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
         voiceBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), TestActivity.class);
-                startActivity(intent);
+                loadSpeechRecongnizer();
             }
         });
         satelliteBtn.setOnClickListener(new View.OnClickListener() {
@@ -352,7 +384,7 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
                 mBaiduMap.setMapStatus(mMapStatusUpdate);
             }
         });
-//改动
+        //改动
         wayBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -378,7 +410,24 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
 
             }
         });
+        initListener = new InitListener() {
+            @Override
+            public void onInit(int i) {
 
+            }
+        };
+        // 语音识别返回
+        recognizerDialogListener = new RecognizerDialogListener() {
+            @Override
+            public void onResult(RecognizerResult recognizerResult, boolean b) {
+                System.out.println(recognizerResult.getResultString());
+            }
+
+            @Override
+            public void onError(SpeechError speechError) {
+
+            }
+        };
     }
 
     /**
@@ -444,104 +493,24 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
         mSuggestionSearch.setOnGetSuggestionResultListener(listener);
     }
 
-    /**
-     * 地图单击事件
-     * @param point
-     */
-    @Override
-    public void onMapClick(LatLng point) {
-        mBaiduMap.hideInfoWindow();
-        mBaiduMap.clear();
-        BitmapDescriptor descriptor = BitmapDescriptorFactory.fromResource(R.drawable.icon_marka);
-        OverlayOptions options = new MarkerOptions().position(point).icon(descriptor);
-        mBaiduMap.addOverlay(options);
-    }
 
     /**
-     * 地图上的点的单击事件
-     * @param poi
-     * @return
+     * 初始化语音识别
      */
-    @Override
-    public boolean onMapPoiClick(MapPoi poi) {
-        mBaiduMap.hideInfoWindow();
-        mBaiduMap.clear();
-        BitmapDescriptor descriptor = BitmapDescriptorFactory.fromResource(R.drawable.icon_marka);
-        OverlayOptions options = new MarkerOptions().position(poi.getPosition()).icon(descriptor);
-        mBaiduMap.addOverlay(options);
-        return true;
+    public void loadSpeechRecongnizer() {
+
+
+        ///1.创建 RecognizerDialog 对象
+        RecognizerDialog mDialog = new RecognizerDialog(this, initListener);
+
+        //若要将 RecognizerDialog 用于语义理解，必须添加以下参数设置，设置之后 onResult 回调返回将是语义理解的结果
+        // mDialog.setParameter("asr_sch", "1");
+        // mDialog.setParameter("nlp_version", "3.0");
+
+        //3.设置回调接口
+        mDialog.setListener( recognizerDialogListener );
+
+        //4.显示 dialog，接收语音输入
+        mDialog.show();
     }
-//    public void initVoiceInput(){
-//        EventManager asr = EventManagerFactory.create(getApplicationContext(),"asr");
-//        voiceBtn.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//
-//
-//            }
-//        });
-//        com.baidu.speech.EventListener eventListener = new com.baidu.speech.EventListener() {
-//            @Override
-//            public void onEvent(String s, String s1, byte[] bytes, int i, int i1) {
-//                if(s.equals(SpeechConstant.CALLBACK_EVENT_ASR_READY)){
-//                    // 引擎就绪，可以说话，一般在收到此事件后通过UI通知用户可以说话了
-//                }
-//                if(s.equals(SpeechConstant.CALLBACK_EVENT_ASR_FINISH)){
-//                    // 识别结束
-//                }
-//                // ... 支持的输出事件和事件支持的事件参数见“输入和输出参数”一节
-//            }
-//        };
-//        asr.registerListener(eventListener);
-//        SpeechRecognizer speechRecognizer = SpeechRecognizer.createSpeechRecognizer(getApplicationContext(),
-//                new ComponentName(getApplicationContext(), VoiceRecognitionService.class));
-//        speechRecognizer.setRecognitionListener(new RecognitionListener() {
-//            @Override
-//            public void onReadyForSpeech(Bundle bundle) {
-//                // 准备就绪
-//                Toast.makeText(getApplicationContext(), "请开始说话", Toast.LENGTH_SHORT).show();
-//            }
-//
-//            @Override
-//            public void onBeginningOfSpeech() {
-//
-//            }
-//
-//            @Override
-//            public void onRmsChanged(float v) {
-//
-//            }
-//
-//            @Override
-//            public void onBufferReceived(byte[] bytes) {
-//
-//            }
-//
-//            @Override
-//            public void onEndOfSpeech() {
-//
-//            }
-//
-//            @Override
-//            public void onError(int i) {
-//
-//            }
-//
-//            @Override
-//            public void onResults(Bundle bundle) {
-//
-//            }
-//
-//            @Override
-//            public void onPartialResults(Bundle bundle) {
-//
-//            }
-//
-//            @Override
-//            public void onEvent(int i, Bundle bundle) {
-//
-//            }
-//        });
-//
-//    }
 }
