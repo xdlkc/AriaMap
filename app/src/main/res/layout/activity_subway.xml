@@ -1,30 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     >
     <EditText
-        android:id="@+id/subwayEdittext"
+        android:id="@+id/subway_edt"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="请输入目标城市"
+        android:hint="请输入城市"
         android:inputType="text"
-        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
        />
 
     <Button
-        android:id="@+id/searchSub"
+        android:id="@+id/search_subway_btn"
         android:layout_width="wrap_content"
-        android:layout_height="38dp"
-        android:layout_alignParentRight="true"
+        android:layout_height="40dp"
+        android:layout_alignParentEnd="true"
         android:background="@color/lightskyblue"
-        android:text="搜索"
+        android:text="@string/search"
         android:textColor="@color/ghostwhite"
-        android:textSize="20dp" />
+        tools:ignore="RelativeOverlap" />
     <WebView
         android:id="@+id/webview"
         android:layout_width="match_parent"
-        android:layout_height="0dip"
+        android:layout_height="match_parent"
+        android:layout_below="@id/subway_edt"
     />
 </RelativeLayout>

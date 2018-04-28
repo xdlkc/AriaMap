@@ -3,9 +3,6 @@ package com.xidian.aria.ariamap;
 
 import android.Manifest;
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -40,39 +37,17 @@ import com.baidu.mapapi.map.MapView;
 import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.map.OverlayOptions;
 import com.baidu.mapapi.model.LatLng;
-import com.baidu.mapapi.search.core.RouteLine;
-import com.baidu.mapapi.search.core.SearchResult;
-import com.baidu.mapapi.search.route.BikingRouteResult;
-import com.baidu.mapapi.search.route.DrivingRoutePlanOption;
-import com.baidu.mapapi.search.route.DrivingRouteResult;
-import com.baidu.mapapi.search.route.IndoorRouteResult;
-import com.baidu.mapapi.search.route.MassTransitRouteResult;
-import com.baidu.mapapi.search.route.OnGetRoutePlanResultListener;
-import com.baidu.mapapi.search.route.PlanNode;
 import com.baidu.mapapi.search.route.RoutePlanSearch;
-import com.baidu.mapapi.search.route.TransitRoutePlanOption;
-import com.baidu.mapapi.search.route.TransitRouteResult;
-import com.baidu.mapapi.search.route.WalkingRoutePlanOption;
-import com.baidu.mapapi.search.route.WalkingRouteResult;
 import com.baidu.mapapi.search.sug.OnGetSuggestionResultListener;
 import com.baidu.mapapi.search.sug.SuggestionResult;
 import com.baidu.mapapi.search.sug.SuggestionSearch;
 import com.baidu.mapapi.search.sug.SuggestionSearchOption;
-import com.xidian.aria.ariamap.enums.TrafficWay;
-import com.xidian.aria.ariamap.overlays.MyDrivingRouteOverlay;
-import com.xidian.aria.ariamap.overlays.MyTransitRouteOverlay;
-import com.xidian.aria.ariamap.overlays.MyWalkingRouteOverlay;
-import com.xidian.aria.ariamap.overlayutil.DrivingRouteOverlay;
-import com.xidian.aria.ariamap.overlayutil.OverlayManager;
-import com.xidian.aria.ariamap.overlayutil.TransitRouteOverlay;
-import com.xidian.aria.ariamap.overlayutil.WalkingRouteOverlay;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickListener,
-        OnGetRoutePlanResultListener {
+public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickListener{
     // 地图显示组件
     private MapView mMapView = null;
     // 地图
@@ -112,47 +87,11 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
     private List<LatLng> sugPois;
     private SuggestionSearch mSuggestionSearch = null;
     private ArrayAdapter<String> sugAdapter;
-
-    // 步行线路检索结果
-    private WalkingRouteResult mWalkRes = null;
-    // 自行车线路检索结果
-    private BikingRouteResult mBikeRes = null;
-    // 公交线路检索结果
-    private TransitRouteResult mTransitRes = null;
-    // 驾车线路检索结果
-    private DrivingRouteResult mDriveRes = null;
-    // 跨城公交线路检索结果
-    private MassTransitRouteResult mMassRes = null;
-    // 显示的路线
-    private RouteLine route = null;
-    private OverlayManager routeOverlay = null;
     // 侧边栏
     private NavigationView navigationView = null;
     private BitmapDescriptor bitmap ;
     private LatLng endPoi;
-    /**
-     * 路线检索
-     * @param way 交通方式
-     * @param stNode 起点
-     * @param enNode 终点
-     */
-    public void search(TrafficWay way, PlanNode stNode, PlanNode enNode){
-        switch (way){
-            case WALK:
-                mSearch.walkingSearch(new WalkingRoutePlanOption().from(stNode).to(enNode));
-                break;
-            case BUS:
-                mSearch.transitSearch(new TransitRoutePlanOption().from(stNode).to(enNode));
-                break;
-            case DRIVING:
-                mSearch.drivingSearch(new DrivingRoutePlanOption().from(stNode).to(enNode));
-                break;
-            default:
-                break;
-        }
-    }
     public void getPermission(){
-        Context context = getApplicationContext();
         String [] permissions = new String[]{Manifest.permission.READ_SYNC_SETTINGS,Manifest.permission.WRITE_SETTINGS
                 ,Manifest.permission.ACCESS_COARSE_LOCATION,Manifest.permission.ACCESS_FINE_LOCATION
                 ,Manifest.permission.ACCESS_WIFI_STATE,Manifest.permission.ACCESS_NETWORK_STATE
@@ -170,6 +109,7 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
                 break;
             default:
                 Toast.makeText(getApplicationContext(),"未获取到权限！",Toast.LENGTH_LONG).show();
+                finish();
                 break;
         }
     }
@@ -200,7 +140,7 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
         getPermission();
         SDKInitializer.initialize(getApplicationContext());
         setContentView(R.layout.activity_show_map);
-        bitmap = BitmapDescriptorFactory.fromResource(R.drawable.icon_markb);
+        bitmap = BitmapDescriptorFactory.fromResource(R.drawable.icon_marka);
         mMapView = (MapView) findViewById(R.id.bmapView);
         userBtn = (ImageButton) findViewById(R.id.user_btn);
         satelliteBtn = (FloatingActionButton) findViewById(R.id.satellite_btn);
@@ -214,6 +154,9 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
         enAutoTw = (AutoCompleteTextView) findViewById(R.id.endAutoTw);
         mSuggestionSearch = SuggestionSearch.newInstance();
         navigationView = (NavigationView) findViewById(R.id.user_nav);
+        initAfterPermission();
+    }
+    public void initAfterPermission(){
         //登录
         View drawview_head = navigationView.inflateHeaderView(R.layout.left_head_layout);
         ImageView user_pic = (ImageView) drawview_head.findViewById(R.id.land);
@@ -224,7 +167,6 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
                 startActivity(intent);
             }
         });
-
 
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -261,10 +203,8 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
 
         initMap();
         initComponents();
-        initSearchTool();
         initLocationTool();
         initSearchComplete();
-
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -318,14 +258,6 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
         MapStatusUpdate mMapStatusUpdate = MapStatusUpdateFactory.newMapStatus(mMapStatus);
         mBaiduMap.setMapStatus(mMapStatusUpdate);
         mBaiduMap.setOnMapClickListener(ShowMapActivity.this);
-    }
-
-    /**
-     * 初始化搜索工具
-     */
-    private void initSearchTool(){
-        mSearch = RoutePlanSearch.newInstance();
-        mSearch.setOnGetRoutePlanResultListener(ShowMapActivity.this);
     }
 
     /**
@@ -417,27 +349,17 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
                     Toast toast = Toast.makeText(getApplicationContext(),"请输入目标位置！",Toast.LENGTH_SHORT);
                     toast.show();
                 }else {
-                    System.out.println(endPoi);
                     if (endPoi != null){
                         Intent intent = new Intent(getApplicationContext(),RouteResultActivity.class);
-                        SerializableBaiduMap serializableBaiduMap = new SerializableBaiduMap(mBaiduMap,mWalkRes,mBikeRes,mTransitRes,mDriveRes,mMassRes
-                                ,city,centerPoint,zoomLevel,centerPoint,endPoi);
+                        SerializableBaiduMap serializableBaiduMap = new SerializableBaiduMap(mBaiduMap,city,centerPoint,zoomLevel,centerPoint,endPoi);
                         intent.putExtra("map",serializableBaiduMap);
                         startActivity(intent);
                     }
 
-                /*    search(TrafficWay.getByWay("driving"),stNode,enNode);*/
-
                 }
             }
         });
-
-
-
         //导航
-
-
-
         navBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -511,132 +433,6 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
     }
 
     /**
-     * 步行路线回调
-     * @param result
-     */
-    @Override
-    public void onGetWalkingRouteResult(WalkingRouteResult result) {
-        if (result == null || result.error != SearchResult.ERRORNO.NO_ERROR) {
-            Toast.makeText(ShowMapActivity.this, "抱歉，未找到结果", Toast.LENGTH_SHORT).show();
-        }
-        if (result.error == SearchResult.ERRORNO.AMBIGUOUS_ROURE_ADDR) {
-            // 起终点或途经点地址有岐义，通过以下接口获取建议查询信息
-            // result.getSuggestAddrInfo()
-            return;
-        }else {
-            mBaiduMap.clear();
-            mWalkRes = result;
-            route = result.getRouteLines().get(0);
-            WalkingRouteOverlay overlay = new MyWalkingRouteOverlay(mBaiduMap);
-            mBaiduMap.setOnMarkerClickListener(overlay);
-            overlay.setData(result.getRouteLines().get(0));
-            overlay.addToMap();
-            overlay.zoomToSpan();
-        }
-
-    }
-
-    /**
-     * 公交路线回调
-     * @param result
-     */
-    @Override
-    public void onGetTransitRouteResult(TransitRouteResult result) {
-
-        if (result == null || result.error != SearchResult.ERRORNO.NO_ERROR) {
-            Toast.makeText(ShowMapActivity.this, "抱歉，未找到结果", Toast.LENGTH_SHORT).show();
-        }
-        if (result.error == SearchResult.ERRORNO.AMBIGUOUS_ROURE_ADDR) {
-            // 起终点或途经点地址有岐义，通过以下接口获取建议查询信息
-            // result.getSuggestAddrInfo()
-            return;
-        }else {
-            mBaiduMap.clear();
-            mTransitRes = result;
-            route = result.getRouteLines().get(0);
-            TransitRouteOverlay overlay = new MyTransitRouteOverlay(mBaiduMap);
-            mBaiduMap.setOnMarkerClickListener(overlay);
-            overlay.setData(result.getRouteLines().get(0));
-            overlay.addToMap();
-            overlay.zoomToSpan();
-        }
-    }
-
-    /**
-     * 跨城公交路线回调
-     * @param result
-     */
-    @Override
-    public void onGetMassTransitRouteResult(MassTransitRouteResult result) {
-        if (result == null || result.error != SearchResult.ERRORNO.NO_ERROR) {
-            Toast.makeText(ShowMapActivity.this, "抱歉，未找到结果", Toast.LENGTH_SHORT).show();
-        }
-        if (result.error == SearchResult.ERRORNO.AMBIGUOUS_ROURE_ADDR) {
-            // 起终点模糊，获取建议列表
-            result.getSuggestAddrInfo();
-            return;
-        }
-    }
-
-    /**
-     * 驾车路线回调
-     * @param result
-     */
-    @Override
-    public void onGetDrivingRouteResult(DrivingRouteResult result) {
-        if (result == null || result.error != SearchResult.ERRORNO.NO_ERROR) {
-            Toast.makeText(ShowMapActivity.this, "抱歉，未找到结果", Toast.LENGTH_SHORT).show();
-        }
-        if (result.error == SearchResult.ERRORNO.AMBIGUOUS_ROURE_ADDR) {
-            // 起终点或途经点地址有岐义，通过以下接口获取建议查询信息
-            // result.getSuggestAddrInfo()
-            return;
-        }else {
-            mDriveRes = result;
-            route = result.getRouteLines().get(0);
-            DrivingRouteOverlay overlay = new MyDrivingRouteOverlay(mBaiduMap);
-            mBaiduMap.setOnMarkerClickListener(overlay);
-            overlay.setData(result.getRouteLines().get(0));
-            overlay.addToMap();
-            overlay.zoomToSpan();
-        }
-    }
-
-    /**
-     * 室内路线回调
-     * @param indoorRouteResult
-     */
-    @Override
-    public void onGetIndoorRouteResult(IndoorRouteResult indoorRouteResult) {
-
-    }
-
-    /**
-     * 自行车路线回调
-     * @param result
-     */
-    @Override
-    public void onGetBikingRouteResult(BikingRouteResult result) {
-        if (result == null || result.error != SearchResult.ERRORNO.NO_ERROR) {
-            Toast.makeText(ShowMapActivity.this, "抱歉，未找到结果", Toast.LENGTH_SHORT).show();
-        }
-        if (result.error == SearchResult.ERRORNO.AMBIGUOUS_ROURE_ADDR) {
-            // 起终点或途经点地址有岐义，通过以下接口获取建议查询信息
-            // result.getSuggestAddrInfo()
-            AlertDialog.Builder builder = new AlertDialog.Builder(ShowMapActivity.this);
-            builder.setTitle("提示");
-            builder.setMessage("检索地址有歧义，请重新设置。\n可通过getSuggestAddrInfo()接口获得建议查询信息");
-            builder.setPositiveButton("确认", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.dismiss();
-                }
-            });
-            builder.create().show();
-        }
-    }
-
-    /**
      * 地图单击事件
      * @param point
      */
@@ -665,4 +461,3 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
     }
 
 }
-//导航

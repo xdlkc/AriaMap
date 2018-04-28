@@ -2,12 +2,10 @@ package com.xidian.aria.ariamap;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
-import android.os.Handler;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.webkit.JavascriptInterface;
-import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -18,38 +16,35 @@ import android.widget.Toast;
 public class SubwayActivity extends AppCompatActivity {
     private Button searchSub;
     private WebView webView;
+    private EditText editText;
     String city = null;
 
+    @SuppressLint("SetJavaScriptEnabled")
     @Override
-    @SuppressLint("JavascriptInterface")
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_subway);
         webView = findViewById(R.id.webview);
-        webView.loadUrl("file:///android_assets/subway.html");
-        webView.getSettings().setJavaScriptEnabled(true);
-//        webView.setWebViewClient(new WebViewClient());
-
-        webView.addJavascriptInterface(new JSClass(), "android");
-        searchSub = findViewById(R.id.searchSub);
-
+        searchSub = findViewById(R.id.search_subway_btn);
+        editText = findViewById(R.id.subway_edt);
+        WebSettings settings = webView.getSettings();
+        settings.setJavaScriptEnabled(true);
+        webView.loadUrl("file:///android_asset/subway.html");
         searchSub.setOnClickListener(new View.OnClickListener() {
-
             @Override
-            public void onClick(View view) {
-//                Intent intent = getIntent();
-//                city = intent.getStringExtra("city");
-                webView.loadUrl("javascript:showSubway()" );
+            public void onClick(View v) {
+                city = editText.getText().toString();
+                if (city.equals("")){
+                    Toast.makeText(getApplicationContext(),"请输入城市名！",Toast.LENGTH_LONG).show();
+                    return;
+                }
+                String s = "javascript:search_by_city('"+city+"')";
+                System.out.println(s);
+                webView.loadUrl(s);
             }
         });
 
 
     }
 
-    class JSClass{
-        @JavascriptInterface
-        public void showAndroid(){
-            Toast.makeText(SubwayActivity.this,"js调用了android的方法",Toast.LENGTH_SHORT).show();
-        }
-    }
 }

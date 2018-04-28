@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name="spingarr">
+    <string-array name="spin_array">
         <item>推荐路线</item>
         <item>最短时间</item>
         <item>最短路径</item>

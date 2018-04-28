@@ -1,2 +1,5 @@
-1. RouteResultActivity的viewPager还未修改好
-2. subwayActivity的js线路图未修改好
+1. RouteResultActivity的viewPager还未修改好   over
+2. subwayActivity的js线路图未修改好  over
+3. 公交线路图界面需要调整
+4. 公交线路的展示位置
+5. 公交检索  over

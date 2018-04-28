@@ -1,32 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.xidian.aria.ariamap.BusSearchActivity">
-    <RelativeLayout
+
+    <EditText
+        android:id="@+id/bus_search_edt"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:textSize="20sp"
+        android:singleLine="true"
+        android:hint="输入公交线路：如916"
+        android:inputType="text" />
+
+    <ImageButton
+        android:id="@+id/bus_search_btn"
         android:layout_width="wrap_content"
         android:layout_height="50dp"
-        android:layout_marginTop="5dp">
+        android:layout_alignParentEnd="true"
+        android:layout_alignEnd="@id/bus_search_edt"
+        android:alpha="0.5"
+        android:background="@mipmap/ic_search"
+        android:textColor="@color/ghostwhite"
+        android:scaleType="centerInside"
+        android:contentDescription="TODO" />
 
-        <EditText
-            android:id="@+id/bus_search_edt"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:textSize="20dp"
-            android:singleLine="true"
-            android:hint="公交查询" />
-
-        <ImageButton
-            android:id="@+id/bus_search_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_alignParentEnd="true"
-            android:layout_alignRight="@id/bus_search_edt"
-            android:alpha="0.5"
-            android:background="@mipmap/ic_search"
-            android:scaleType="centerInside" />
-    </RelativeLayout>
+    <ListView
+        android:id="@+id/bus_lv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/bus_search_edt"/>
     <!--<TextView-->
         <!--android:layout_width="match_parent"-->
         <!--android:layout_height="wrap_content"-->
@@ -46,4 +50,4 @@
         <!--&gt;-->
 
     <!--</ListView>-->
-</LinearLayout>
+</RelativeLayout>
