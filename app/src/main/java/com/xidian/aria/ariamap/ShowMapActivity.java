@@ -42,11 +42,15 @@ import com.baidu.mapapi.search.sug.OnGetSuggestionResultListener;
 import com.baidu.mapapi.search.sug.SuggestionResult;
 import com.baidu.mapapi.search.sug.SuggestionSearch;
 import com.baidu.mapapi.search.sug.SuggestionSearchOption;
+import com.xidian.aria.ariamap.parcelables.ParcelableMapData;
+import com.xidian.aria.ariamap.tests.TestActivity;
 
 import java.util.ArrayList;
 import java.util.List;
 
-
+/**
+ * 地图首页
+ */
 public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickListener{
     // 地图显示组件
     private MapView mMapView = null;
@@ -55,8 +59,10 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
     private RoutePlanSearch mSearch = null;
     private LocationClient mLocationClient = null;
     private MyLocationListener locationListener = null;
+
     // 侧边栏按钮
     private ImageButton userBtn = null;
+    private ImageButton voiceBtn;
     // 卫星图按钮
     private FloatingActionButton satelliteBtn = null;
     // 地图类型
@@ -91,48 +97,6 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
     private NavigationView navigationView = null;
     private BitmapDescriptor bitmap ;
     private LatLng endPoi;
-    public void getPermission(){
-        String [] permissions = new String[]{Manifest.permission.READ_SYNC_SETTINGS,Manifest.permission.WRITE_SETTINGS
-                ,Manifest.permission.ACCESS_COARSE_LOCATION,Manifest.permission.ACCESS_FINE_LOCATION
-                ,Manifest.permission.ACCESS_WIFI_STATE,Manifest.permission.ACCESS_NETWORK_STATE
-                ,Manifest.permission.CHANGE_WIFI_STATE,Manifest.permission.READ_PHONE_STATE
-                ,Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.INTERNET
-                ,Manifest.permission.MOUNT_UNMOUNT_FILESYSTEMS};
-        requestPermissions(permissions,1);
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch (requestCode){
-            case 1:
-                break;
-            default:
-                Toast.makeText(getApplicationContext(),"未获取到权限！",Toast.LENGTH_LONG).show();
-                finish();
-                break;
-        }
-    }
-
-    /**
-     * 设置中心点，城市，缩放比例
-     */
-    public void setCenter(LatLng cenPoi,String city){
-        this.centerPoint = cenPoi;
-        this.city = city;
-        //定义地图状态
-        MapStatus mMapStatus = new MapStatus.Builder()
-                .target(this.centerPoint)
-                .zoom(this.zoomLevel)
-                .build();
-        //定义MapStatusUpdate对象，以便描述地图状态将要发生的变化
-        MapStatusUpdate mMapStatusUpdate = MapStatusUpdateFactory.newMapStatus(mMapStatus);
-        //改变地图状态
-        mBaiduMap.setMapStatus(mMapStatusUpdate);
-        OverlayOptions option = new MarkerOptions()
-                .position(this.centerPoint).icon(bitmap);
-        mBaiduMap.addOverlay(option);
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -143,6 +107,7 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
         bitmap = BitmapDescriptorFactory.fromResource(R.drawable.icon_marka);
         mMapView = (MapView) findViewById(R.id.bmapView);
         userBtn = (ImageButton) findViewById(R.id.user_btn);
+        voiceBtn = findViewById(R.id.voice_btn);
         satelliteBtn = (FloatingActionButton) findViewById(R.id.satellite_btn);
         minusBtn = (Button) findViewById(R.id.minus_btn);
         plusBtn = (Button) findViewById(R.id.plus_btn);
@@ -155,6 +120,24 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
         mSuggestionSearch = SuggestionSearch.newInstance();
         navigationView = (NavigationView) findViewById(R.id.user_nav);
         initAfterPermission();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mSuggestionSearch.destroy();
+        mMapView.onDestroy();
+
+    }
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mMapView.onResume();
+    }
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mMapView.onPause();
     }
     public void initAfterPermission(){
         //登录
@@ -211,25 +194,47 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
         getMenuInflater().inflate(R.menu.new_menu, menu);
         return true;
     }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        mSuggestionSearch.destroy();
-        mMapView.onDestroy();
-
-    }
-    @Override
-    protected void onResume() {
-        super.onResume();
-        mMapView.onResume();
-    }
-    @Override
-    protected void onPause() {
-        super.onPause();
-        mMapView.onPause();
+    public void getPermission(){
+        String [] permissions = new String[]{Manifest.permission.READ_SYNC_SETTINGS,Manifest.permission.WRITE_SETTINGS
+                ,Manifest.permission.ACCESS_COARSE_LOCATION,Manifest.permission.ACCESS_FINE_LOCATION
+                ,Manifest.permission.ACCESS_WIFI_STATE,Manifest.permission.ACCESS_NETWORK_STATE
+                ,Manifest.permission.CHANGE_WIFI_STATE,Manifest.permission.READ_PHONE_STATE
+                ,Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.INTERNET
+                ,Manifest.permission.MOUNT_UNMOUNT_FILESYSTEMS};
+        requestPermissions(permissions,1);
     }
 
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode){
+            case 1:
+                break;
+            default:
+                finish();
+                break;
+        }
+    }
+
+    /**
+     * 设置中心点，城市，缩放比例
+     */
+    public void setCenter(LatLng cenPoi,String city){
+        this.centerPoint = cenPoi;
+        this.city = city;
+        //定义地图状态
+        MapStatus mMapStatus = new MapStatus.Builder()
+                .target(this.centerPoint)
+                .zoom(this.zoomLevel)
+                .build();
+        //定义MapStatusUpdate对象，以便描述地图状态将要发生的变化
+        MapStatusUpdate mMapStatusUpdate = MapStatusUpdateFactory.newMapStatus(mMapStatus);
+        //改变地图状态
+        mBaiduMap.setMapStatus(mMapStatusUpdate);
+        OverlayOptions option = new MarkerOptions()
+                .position(this.centerPoint).icon(bitmap);
+        mBaiduMap.addOverlay(option);
+    }
     /**
      * 定位回调
      */
@@ -292,6 +297,13 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
                 endPoi = sugPois.get(position);
             }
         });
+        voiceBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), TestActivity.class);
+                startActivity(intent);
+            }
+        });
         satelliteBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -351,8 +363,8 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
                 }else {
                     if (endPoi != null){
                         Intent intent = new Intent(getApplicationContext(),RouteResultActivity.class);
-                        SerializableBaiduMap serializableBaiduMap = new SerializableBaiduMap(mBaiduMap,city,centerPoint,zoomLevel,centerPoint,endPoi);
-                        intent.putExtra("map",serializableBaiduMap);
+                        ParcelableMapData parcelableMapData = new ParcelableMapData(mBaiduMap,city,centerPoint,zoomLevel,centerPoint,endPoi);
+                        intent.putExtra("map", parcelableMapData);
                         startActivity(intent);
                     }
 
@@ -459,5 +471,77 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
         mBaiduMap.addOverlay(options);
         return true;
     }
-
+//    public void initVoiceInput(){
+//        EventManager asr = EventManagerFactory.create(getApplicationContext(),"asr");
+//        voiceBtn.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//
+//
+//            }
+//        });
+//        com.baidu.speech.EventListener eventListener = new com.baidu.speech.EventListener() {
+//            @Override
+//            public void onEvent(String s, String s1, byte[] bytes, int i, int i1) {
+//                if(s.equals(SpeechConstant.CALLBACK_EVENT_ASR_READY)){
+//                    // 引擎就绪，可以说话，一般在收到此事件后通过UI通知用户可以说话了
+//                }
+//                if(s.equals(SpeechConstant.CALLBACK_EVENT_ASR_FINISH)){
+//                    // 识别结束
+//                }
+//                // ... 支持的输出事件和事件支持的事件参数见“输入和输出参数”一节
+//            }
+//        };
+//        asr.registerListener(eventListener);
+//        SpeechRecognizer speechRecognizer = SpeechRecognizer.createSpeechRecognizer(getApplicationContext(),
+//                new ComponentName(getApplicationContext(), VoiceRecognitionService.class));
+//        speechRecognizer.setRecognitionListener(new RecognitionListener() {
+//            @Override
+//            public void onReadyForSpeech(Bundle bundle) {
+//                // 准备就绪
+//                Toast.makeText(getApplicationContext(), "请开始说话", Toast.LENGTH_SHORT).show();
+//            }
+//
+//            @Override
+//            public void onBeginningOfSpeech() {
+//
+//            }
+//
+//            @Override
+//            public void onRmsChanged(float v) {
+//
+//            }
+//
+//            @Override
+//            public void onBufferReceived(byte[] bytes) {
+//
+//            }
+//
+//            @Override
+//            public void onEndOfSpeech() {
+//
+//            }
+//
+//            @Override
+//            public void onError(int i) {
+//
+//            }
+//
+//            @Override
+//            public void onResults(Bundle bundle) {
+//
+//            }
+//
+//            @Override
+//            public void onPartialResults(Bundle bundle) {
+//
+//            }
+//
+//            @Override
+//            public void onEvent(int i, Bundle bundle) {
+//
+//            }
+//        });
+//
+//    }
 }

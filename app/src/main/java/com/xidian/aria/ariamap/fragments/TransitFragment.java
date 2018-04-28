@@ -27,8 +27,7 @@ import com.baidu.mapapi.search.route.RoutePlanSearch;
 import com.baidu.mapapi.search.route.TransitRouteResult;
 import com.baidu.mapapi.search.route.WalkingRouteResult;
 import com.xidian.aria.ariamap.R;
-import com.xidian.aria.ariamap.SerializableBaiduMap;
-import com.xidian.aria.ariamap.listeners.MyOnGetRoutePlanResultListener;
+import com.xidian.aria.ariamap.parcelables.ParcelableMapData;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -57,7 +56,7 @@ public class TransitFragment extends Fragment {
     private ListView listView;
     private List<String > routeList;
     private ArrayAdapter<String > routeAdapter;
-    public static TransitFragment newInstance(SerializableBaiduMap map){
+    public static TransitFragment newInstance(ParcelableMapData map){
         TransitFragment fragment = new TransitFragment();
         Bundle bundle = new Bundle();
         bundle.putParcelable("map_page",map);
@@ -70,13 +69,13 @@ public class TransitFragment extends Fragment {
         super.onCreate(savedInstanceState);
         Bundle args = getArguments();
         if (args != null) {
-            SerializableBaiduMap serializableBaiduMap = args.getParcelable("map_page");
-            zoomLevel = serializableBaiduMap.getZoomLevel();
-            startPoi = serializableBaiduMap.getStartPoi();
-            endPoi = serializableBaiduMap.getEndPoi();
-            city = serializableBaiduMap.getCity();
-            center = serializableBaiduMap.getCenter();
-            massTransitMap = serializableBaiduMap.getMap();
+            ParcelableMapData parcelableMapData = args.getParcelable("map_page");
+            zoomLevel = parcelableMapData.getZoomLevel();
+            startPoi = parcelableMapData.getStartPoi();
+            endPoi = parcelableMapData.getEndPoi();
+            city = parcelableMapData.getCity();
+            center = parcelableMapData.getCenter();
+            massTransitMap = parcelableMapData.getMap();
             startNode = PlanNode.withLocation(startPoi);
             endNode = PlanNode.withLocation(endPoi);
         }

@@ -8,13 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.baidu.mapapi.map.BaiduMap;
-import com.baidu.mapapi.map.BitmapDescriptorFactory;
-import com.baidu.mapapi.map.MapStatus;
-import com.baidu.mapapi.map.MapStatusUpdate;
-import com.baidu.mapapi.map.MapStatusUpdateFactory;
 import com.baidu.mapapi.map.MapView;
-import com.baidu.mapapi.map.MarkerOptions;
-import com.baidu.mapapi.map.OverlayOptions;
 import com.baidu.mapapi.model.LatLng;
 import com.baidu.mapapi.search.route.PlanNode;
 import com.baidu.mapapi.search.route.RoutePlanSearch;
@@ -22,7 +16,7 @@ import com.baidu.mapapi.search.route.WalkingRoutePlanOption;
 import com.baidu.mapapi.search.route.WalkingRouteResult;
 import com.xidian.aria.ariamap.listeners.MyOnGetRoutePlanResultListener;
 import com.xidian.aria.ariamap.R;
-import com.xidian.aria.ariamap.SerializableBaiduMap;
+import com.xidian.aria.ariamap.parcelables.ParcelableMapData;
 
 import java.util.Objects;
 
@@ -37,7 +31,7 @@ public class WalkFragment extends Fragment {
     // 中心点
     private LatLng center;
     MyOnGetRoutePlanResultListener onGetRoutePlanResultListener;
-    public static WalkFragment newInstance(SerializableBaiduMap map){
+    public static WalkFragment newInstance(ParcelableMapData map){
         WalkFragment fragment = new WalkFragment();
         Bundle bundle = new Bundle();
         bundle.putParcelable("map_page",map);
@@ -50,12 +44,12 @@ public class WalkFragment extends Fragment {
         super.onCreate(savedInstanceState);
         Bundle args = getArguments();
         if (args != null) {
-            SerializableBaiduMap serializableBaiduMap = args.getParcelable("map_page");
-            zoomLevel = serializableBaiduMap.getZoomLevel();
-            startPoi = serializableBaiduMap.getStartPoi();
-            endPoi = serializableBaiduMap.getEndPoi();
-            city = serializableBaiduMap.getCity();
-            center = serializableBaiduMap.getCenter();
+            ParcelableMapData parcelableMapData = args.getParcelable("map_page");
+            zoomLevel = parcelableMapData.getZoomLevel();
+            startPoi = parcelableMapData.getStartPoi();
+            endPoi = parcelableMapData.getEndPoi();
+            city = parcelableMapData.getCity();
+            center = parcelableMapData.getCenter();
         }
     }
 

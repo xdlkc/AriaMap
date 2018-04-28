@@ -12,15 +12,19 @@ import com.xidian.aria.ariamap.adapters.MyFragmentPagerAdapter;
 import com.xidian.aria.ariamap.fragments.DriveFragment;
 import com.xidian.aria.ariamap.fragments.TransitFragment;
 import com.xidian.aria.ariamap.fragments.WalkFragment;
+import com.xidian.aria.ariamap.parcelables.ParcelableMapData;
 
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * 路线规划模块，包括驾车路线，步行路线，公交路线提示
+ */
 public class RouteResultActivity extends FragmentActivity {
     TabLayout tabLayout = null;
     ViewPager viewPager = null;
     // 传递过来的数据
-    SerializableBaiduMap serializableBaiduMap = null;
+    ParcelableMapData parcelableMapData = null;
     FragmentPagerAdapter fragmentPagerAdapter;
     Fragment walkFragment;
     DriveFragment driveFragment;
@@ -32,13 +36,13 @@ public class RouteResultActivity extends FragmentActivity {
         tabLayout = findViewById(R.id.route_tab);
         viewPager = findViewById(R.id.route_view_pager);
         Intent intent = getIntent();
-        serializableBaiduMap = intent.getParcelableExtra("map");
+        parcelableMapData = intent.getParcelableExtra("map");
         initViewPager();
     }
     public void initViewPager(){
-        walkFragment = WalkFragment.newInstance(serializableBaiduMap);
-        driveFragment = DriveFragment.newInstance(serializableBaiduMap);
-        transitFragment = TransitFragment.newInstance(serializableBaiduMap);
+        walkFragment = WalkFragment.newInstance(parcelableMapData);
+        driveFragment = DriveFragment.newInstance(parcelableMapData);
+        transitFragment = TransitFragment.newInstance(parcelableMapData);
         List<Fragment> fragments = new LinkedList<>();
         fragments.add(walkFragment);
         fragments.add(transitFragment);

@@ -13,6 +13,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+/**
+ * 地铁线路图
+ */
 public class SubwayActivity extends AppCompatActivity {
     private Button searchSub;
     private WebView webView;
