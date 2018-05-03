@@ -42,7 +42,6 @@ public class SubwayActivity extends AppCompatActivity {
                     return;
                 }
                 String s = "javascript:search_by_city('"+city+"')";
-                System.out.println(s);
                 webView.loadUrl(s);
             }
         });

@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
+        android:id="@+id/face_login"
+        android:icon="@mipmap/map"
+        android:title="@string/face_login"/>
+    <item
         android:id="@+id/subway"
         android:icon="@mipmap/map"
         android:title="@string/subway_menu"/>

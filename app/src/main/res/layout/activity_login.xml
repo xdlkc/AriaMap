@@ -39,7 +39,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="@string/prompt_email"
-                    android:inputType="textEmailAddress"
+                    android:inputType="text"
                     android:maxLines="1"
                     android:singleLine="true" />
 
@@ -73,6 +73,17 @@
                 android:background="@color/lightskyblue"
                 android:textColor="@color/azure"
               />
+            <Button
+                android:id="@+id/email_sign_up_button"
+                style="?android:textAppearanceSmall"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/sign_up"
+                android:textStyle="bold"
+                android:background="@color/darkblue"
+                android:textColor="@color/azure"
+                />
 
         </LinearLayout>
     </ScrollView>

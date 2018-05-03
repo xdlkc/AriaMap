@@ -28,7 +28,6 @@ public enum TrafficWay {
                 return trafficWay;
             }
         }
-        System.out.println("未查找到相应的交通方式！");
         return null;
     }
 }

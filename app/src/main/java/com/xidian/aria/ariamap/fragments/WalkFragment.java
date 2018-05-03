@@ -30,6 +30,7 @@ public class WalkFragment extends Fragment {
     private String city;
     // 中心点
     private LatLng center;
+    RoutePlanSearch search;
     MyOnGetRoutePlanResultListener onGetRoutePlanResultListener;
     public static WalkFragment newInstance(ParcelableMapData map){
         WalkFragment fragment = new WalkFragment();
@@ -60,14 +61,31 @@ public class WalkFragment extends Fragment {
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
         MapView walkMapView = Objects.requireNonNull(getView()).findViewById(R.id.walk_map_view);
         walkMapView.removeViewAt(1);
         walkMap = walkMapView.getMap();
         onGetRoutePlanResultListener = new MyOnGetRoutePlanResultListener(walkMap);
-        RoutePlanSearch search = RoutePlanSearch.newInstance();
+        search = RoutePlanSearch.newInstance();
         search.setOnGetRoutePlanResultListener(onGetRoutePlanResultListener);
         search.walkingSearch(new WalkingRoutePlanOption().from(PlanNode.withLocation(startPoi)).to(PlanNode.withLocation(endPoi)));
+
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        search.destroy();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
     }
 }

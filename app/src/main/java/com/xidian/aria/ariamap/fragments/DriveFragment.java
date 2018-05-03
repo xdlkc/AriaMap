@@ -60,8 +60,8 @@ public class DriveFragment extends Fragment {
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
         driveMapView = Objects.requireNonNull(getView()).findViewById(R.id.drive_map_view);
         driveMapView.removeViewAt(1);
         driverMap = driveMapView.getMap();
@@ -69,5 +69,17 @@ public class DriveFragment extends Fragment {
         search = RoutePlanSearch.newInstance();
         search.setOnGetRoutePlanResultListener(onGetRoutePlanResultListener);
         search.drivingSearch(new DrivingRoutePlanOption().from(PlanNode.withLocation(startPoi)).to(PlanNode.withLocation(endPoi)));
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        search.destroy();
     }
 }

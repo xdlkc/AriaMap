@@ -88,8 +88,8 @@ public class TransitFragment extends Fragment {
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
         policyMap = new HashMap<>();
         ways = new ArrayList<>();
         spinner = getView().findViewById(R.id.spinner);
@@ -154,7 +154,16 @@ public class TransitFragment extends Fragment {
             public void onGetBikingRouteResult(BikingRouteResult bikingRouteResult) {
             }
         });
-
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        search.destroy();
+    }
 }

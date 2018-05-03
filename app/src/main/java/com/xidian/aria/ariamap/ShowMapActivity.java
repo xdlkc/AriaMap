@@ -56,7 +56,7 @@ import java.util.List;
 /**
  * 地图首页
  */
-public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickListener{
+public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickListener, NavigationView.OnNavigationItemSelectedListener,View.OnClickListener{
     // 地图显示组件
     private MapView mMapView = null;
     // 地图
@@ -192,7 +192,7 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
                 ,Manifest.permission.ACCESS_WIFI_STATE,Manifest.permission.ACCESS_NETWORK_STATE
                 ,Manifest.permission.CHANGE_WIFI_STATE,Manifest.permission.READ_PHONE_STATE
                 ,Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.INTERNET
-                ,Manifest.permission.MOUNT_UNMOUNT_FILESYSTEMS,Manifest.permission.RECORD_AUDIO};
+                ,Manifest.permission.MOUNT_UNMOUNT_FILESYSTEMS,Manifest.permission.RECORD_AUDIO,Manifest.permission.CAMERA};
         requestPermissions(permissions,1);
     }
 
@@ -208,7 +208,6 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
         switch (requestCode){
             case 1:
                 initAfterPermission();
-                SpeechUtility.createUtility(this, SpeechConstant.APPID +"=5ae49d2d");
 
                 break;
             default:
@@ -223,6 +222,7 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
         initLocationTool();
         initSearchComplete();
     }
+
     /**
      * 设置中心点，城市，缩放比例
      */
@@ -242,6 +242,101 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
                 .position(this.centerPoint).icon(BitmapDescriptorFactory.fromResource(R.drawable.icon_marka));
         mBaiduMap.addOverlay(option);
         startPoi = centerPoint;
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        Intent intent;
+        switch (item.getItemId()){
+            case R.id.face_login:
+                intent = new Intent(getApplicationContext(),FaceLoginActivity.class);
+                startActivity(intent);
+                break;
+            case R.id.bus_search_item:
+                intent = new Intent(getApplicationContext(),BusSearchActivity.class);
+                intent.putExtra("city",city);
+                startActivity(intent);
+                break;
+            case R.id.subway:
+                intent = new Intent(getApplicationContext(),SubwayActivity.class);
+                intent.putExtra("city",city);
+                startActivity(intent);
+                break;
+            case R.id.wallet:
+                Toast.makeText(getApplicationContext(), R.string.wallet_menu, Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.history_today:
+                Toast.makeText(getApplicationContext(), R.string.history_menu, Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.step_item:
+                Toast.makeText(getApplicationContext(), R.string.step_menu, Toast.LENGTH_SHORT).show();
+                break;
+            default:
+                break;
+        }
+        return true;
+    }
+
+    @Override
+    public void onClick(View v) {
+        MapStatus mMapStatus;
+        MapStatusUpdate mMapStatusUpdate;
+        switch (v.getId()){
+            case R.id.satellite_btn:
+                if (mapType == BaiduMap.MAP_TYPE_NORMAL){
+                    mBaiduMap.setMapType(BaiduMap.MAP_TYPE_SATELLITE);
+                    mapType = BaiduMap.MAP_TYPE_SATELLITE;
+                }else {
+                    mBaiduMap.setMapType(BaiduMap.MAP_TYPE_NORMAL);
+                    mapType = BaiduMap.MAP_TYPE_NORMAL;
+                }
+                break;
+            case R.id.heat_btn:
+                mBaiduMap.setBaiduHeatMapEnabled(!mBaiduMap.isBaiduHeatMapEnabled());
+                break;
+            case R.id.traffic_btn:
+                Boolean bool = mBaiduMap.isTrafficEnabled();
+                mBaiduMap.setTrafficEnabled(!bool);
+                break;
+            case R.id.plus_btn:
+                if (zoomLevel < 20){
+                    zoomLevel += 1;
+                }
+                mMapStatus = new MapStatus.Builder().zoom(zoomLevel).build();
+                mMapStatusUpdate = MapStatusUpdateFactory.newMapStatus(mMapStatus);
+                mBaiduMap.setMapStatus(mMapStatusUpdate);
+                break;
+            case R.id.minus_btn:
+                if (zoomLevel > 1 ){
+                    zoomLevel -= 1;
+                }
+                mMapStatus = new MapStatus.Builder().zoom(zoomLevel).build();
+                mMapStatusUpdate = MapStatusUpdateFactory.newMapStatus(mMapStatus);
+                mBaiduMap.setMapStatus(mMapStatusUpdate);
+                break;
+            case R.id.way_btn:
+                String endStr = enAutoTw.getText().toString();
+                if (endStr.equals("")){
+                    Toast toast = Toast.makeText(getApplicationContext(),"请输入目标位置！",Toast.LENGTH_SHORT);
+                    toast.show();
+                }else {
+                    if (endPoi != null){
+                        Intent intent = new Intent(getApplicationContext(),RouteResultActivity.class);
+                        ParcelableMapData parcelableMapData = new ParcelableMapData(mBaiduMap,city,centerPoint,zoomLevel,startPoi,endPoi);
+                        intent.putExtra("map", parcelableMapData);
+                        startActivity(intent);
+                    }
+
+                }
+                break;
+            case R.id.nav_btn:
+                break;
+            case R.id.near_btn:
+                Intent intent = new Intent(getApplicationContext(),NearBuildingActivity.class);
+                intent.putExtra("center",centerPoint);
+                startActivity(intent);
+                break;
+        }
     }
 
     /**
@@ -278,6 +373,7 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
      * 初始化界面控件及事件响应
      */
     private void initComponents(){
+        SpeechUtility.createUtility(this, SpeechConstant.APPID +"=5ae49d2d");
         //登录
         View drawview_head = navigationView.inflateHeaderView(R.layout.left_head_layout);
         ImageView user_pic = (ImageView) drawview_head.findViewById(R.id.land);
@@ -288,39 +384,7 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
                 startActivity(intent);
             }
         });
-
-        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                Intent intent;
-                switch (item.getItemId()){
-                    case R.id.bus_search_item:
-                        intent = new Intent(getApplicationContext(),BusSearchActivity.class);
-                        intent.putExtra("city",city);
-                        startActivity(intent);
-                        break;
-                    case R.id.subway:
-                        intent = new Intent(getApplicationContext(),SubwayActivity.class);
-                        intent.putExtra("city",city);
-                        startActivity(intent);
-                        break;
-                    case R.id.wallet:
-                        Toast.makeText(getApplicationContext(), R.string.wallet_menu, Toast.LENGTH_SHORT).show();
-
-                        break;
-                    case R.id.history_today:
-                        Toast.makeText(getApplicationContext(), R.string.history_menu, Toast.LENGTH_SHORT).show();
-                        break;
-                    case R.id.step_item:
-                        Toast.makeText(getApplicationContext(), R.string.step_menu, Toast.LENGTH_SHORT).show();
-                        break;
-                    default:
-                        break;
-                }
-                return true;
-            }
-
-        });
+        navigationView.setNavigationItemSelectedListener(this);
         // 设置提示开始长度
         enAutoTw.setThreshold(1);
         enAutoTw.addTextChangedListener(new TextWatcher() {
@@ -355,80 +419,15 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
                 loadSpeechRecognizer();
             }
         });
-        satelliteBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (mapType == BaiduMap.MAP_TYPE_NORMAL){
-                    mBaiduMap.setMapType(BaiduMap.MAP_TYPE_SATELLITE);
-                    mapType = BaiduMap.MAP_TYPE_SATELLITE;
-                }else {
-                    mBaiduMap.setMapType(BaiduMap.MAP_TYPE_NORMAL);
-                    mapType = BaiduMap.MAP_TYPE_NORMAL;
-                }
-            }
-        });
-        heatBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                mBaiduMap.setBaiduHeatMapEnabled(!mBaiduMap.isBaiduHeatMapEnabled());
-            }
-        });
-        trafficBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Boolean bool = mBaiduMap.isTrafficEnabled();
-                mBaiduMap.setTrafficEnabled(!bool);
-            }
-        });
-        plusBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (zoomLevel < 20){
-                    zoomLevel += 1;
-                }
-                MapStatus mMapStatus = new MapStatus.Builder().zoom(zoomLevel).build();
-                MapStatusUpdate mMapStatusUpdate = MapStatusUpdateFactory.newMapStatus(mMapStatus);
-                mBaiduMap.setMapStatus(mMapStatusUpdate);
-            }
-        });
-
-        minusBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (zoomLevel > 1 ){
-                    zoomLevel -= 1;
-                }
-                MapStatus mMapStatus = new MapStatus.Builder().zoom(zoomLevel).build();
-                MapStatusUpdate mMapStatusUpdate = MapStatusUpdateFactory.newMapStatus(mMapStatus);
-                mBaiduMap.setMapStatus(mMapStatusUpdate);
-            }
-        });
-        //改动
-        wayBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String endStr = enAutoTw.getText().toString();
-                if (endStr.equals("")){
-                    Toast toast = Toast.makeText(getApplicationContext(),"请输入目标位置！",Toast.LENGTH_SHORT);
-                    toast.show();
-                }else {
-                    if (endPoi != null){
-                        Intent intent = new Intent(getApplicationContext(),RouteResultActivity.class);
-                        ParcelableMapData parcelableMapData = new ParcelableMapData(mBaiduMap,city,centerPoint,zoomLevel,startPoi,endPoi);
-                        intent.putExtra("map", parcelableMapData);
-                        startActivity(intent);
-                    }
-
-                }
-            }
-        });
+        satelliteBtn.setOnClickListener(this);
+        heatBtn.setOnClickListener(this);
+        trafficBtn.setOnClickListener(this);
+        plusBtn.setOnClickListener(this);
+        minusBtn.setOnClickListener(this);
+        //路线规划
+        wayBtn.setOnClickListener(this);
         //导航
-        navBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-            }
-        });
+        navBtn.setOnClickListener(this);
         initListener = new InitListener() {
             @Override
             public void onInit(int i) {
@@ -447,7 +446,7 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
                     }
                 }
                 if (speechDo.ls){
-                    speechToText();
+                    enAutoTw.setText(speechBuilder.toString());
                 }
             }
 
@@ -456,6 +455,7 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
 
             }
         };
+        nearBtn.setOnClickListener(this);
     }
 
     /**
@@ -492,7 +492,6 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
         mLocationClient.setLocOption(option);
         //开启定位
         mLocationClient.start();
-
     }
 
     /**
@@ -520,16 +519,13 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
         mSuggestionSearch.setOnGetSuggestionResultListener(listener);
     }
 
-
     /**
      * 初始化语音识别
      */
     public void loadSpeechRecognizer() {
-
         speechBuilder = new StringBuilder();
         ///1.创建 RecognizerDialog 对象
         RecognizerDialog mDialog = new RecognizerDialog(this, initListener);
-
         //若要将 RecognizerDialog 用于语义理解，必须添加以下参数设置，设置之后 onResult 回调返回将是语义理解的结果
         // mDialog.setParameter("asr_sch", "1");
         // mDialog.setParameter("nlp_version", "3.0");
@@ -539,13 +535,5 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
         mDialog.setListener( recognizerDialogListener );
         //4.显示 dialog，接收语音输入
         mDialog.show();
-
-    }
-
-    /**
-     * 将语音识别结果加载到输入框内
-     */
-    public void speechToText(){
-        enAutoTw.setText(speechBuilder.toString());
     }
 }

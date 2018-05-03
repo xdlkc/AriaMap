@@ -1,11 +1,141 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".NearBuildingActivity">
+    <android.support.design.widget.TextInputEditText
+        android:id="@+id/radius_edt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="number"
+        android:hint="距离（默认5公里）"
+        />
+    <android.support.v7.widget.GridLayout
+        android:id="@+id/grid_lay"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:rowCount="2"
+        app:columnCount="3"
+        android:layout_below="@id/radius_edt">
+        <LinearLayout
+            android:id="@+id/food_layout"
+            android:background="#ffffff"
+            android:layout_margin="1dp"
+            android:orientation="vertical"
+            app:layout_rowWeight="1"
+            app:layout_columnWeight="1"
+            android:gravity="center">
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/icon_markb"
+                android:contentDescription="@string/food" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/food"/>
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/cinema_layout"
+            android:orientation="vertical"
+            android:layout_margin="1dp"
+            app:layout_rowWeight="1"
+            app:layout_columnWeight="1"
+            android:gravity="center"
+            android:background="#ffffff">
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/icon_markb"
+                android:contentDescription="@string/cinema" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/cinema"/>
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/market_layout"
+            android:background="#ffffff"
+            android:layout_margin="1dp"
+            android:orientation="vertical"
+            app:layout_rowWeight="1"
+            app:layout_columnWeight="1"
+            android:gravity="center">
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/icon_markc"
+                android:contentDescription="@string/supermarket" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/supermarket"/>
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/hotel_layout"
+            android:background="#ffffff"
+            android:layout_margin="1dp"
+            android:orientation="vertical"
+            app:layout_rowWeight="1"
+            app:layout_columnWeight="1"
+            android:gravity="center">
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/icon_markb"
+                android:contentDescription="@string/hotel" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/hotel"/>
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/hospital_layout"
+            android:background="#ffffff"
+            android:layout_margin="1dp"
+            android:orientation="vertical"
+            app:layout_rowWeight="1"
+            app:layout_columnWeight="1"
+            android:gravity="center">
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/icon_markd"
+                android:contentDescription="@string/hospital" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/hospital"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/other_layout"
+            android:background="#ffffff"
+            android:layout_margin="1dp"
+            android:orientation="vertical"
+            app:layout_rowWeight="1"
+            app:layout_columnWeight="1"
+            android:gravity="center">
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/icon_markd"
+                android:contentDescription="other" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="other"/>
+        </LinearLayout>
+
+    </android.support.v7.widget.GridLayout>
+
+    <ListView
+        android:id="@+id/near_lv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/grid_lay"/>
 
 
-
-</android.support.constraint.ConstraintLayout>
+</RelativeLayout>
