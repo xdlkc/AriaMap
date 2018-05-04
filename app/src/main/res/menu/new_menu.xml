@@ -6,7 +6,7 @@
         android:title="@string/face_login"/>
     <item
         android:id="@+id/subway"
-        android:icon="@mipmap/map"
+        android:icon="@drawable/subway"
         android:title="@string/subway_menu"/>
     <item
         android:id="@+id/wallet"
@@ -14,11 +14,11 @@
         android:title="@string/wallet_menu"/>
     <item
         android:id="@+id/bus_search_item"
-        android:icon="@mipmap/map"
+        android:icon="@drawable/bus"
         android:title="@string/bus_search_menu"/>
     <item
         android:id="@+id/history_today"
-        android:icon="@mipmap/map"
+        android:icon="@drawable/hisotry"
         android:title="@string/history_menu"/>
     <item
         android:id="@+id/step_item"

@@ -30,7 +30,7 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/icon_markb"
+                android:background="@drawable/food"
                 android:contentDescription="@string/food" />
             <TextView
                 android:layout_width="wrap_content"
@@ -48,7 +48,7 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/icon_markb"
+                android:background="@drawable/cinema"
                 android:contentDescription="@string/cinema" />
             <TextView
                 android:layout_width="wrap_content"
@@ -66,7 +66,7 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/icon_markc"
+                android:background="@drawable/supermarket"
                 android:contentDescription="@string/supermarket" />
             <TextView
                 android:layout_width="wrap_content"
@@ -84,7 +84,7 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/icon_markb"
+                android:background="@drawable/hotel"
                 android:contentDescription="@string/hotel" />
             <TextView
                 android:layout_width="wrap_content"
@@ -102,7 +102,7 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/icon_markd"
+                android:background="@drawable/hospital"
                 android:contentDescription="@string/hospital" />
             <TextView
                 android:layout_width="wrap_content"
@@ -111,7 +111,7 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/other_layout"
+            android:id="@+id/scenic_lay"
             android:background="#ffffff"
             android:layout_margin="1dp"
             android:orientation="vertical"
@@ -121,12 +121,12 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/icon_markd"
-                android:contentDescription="other" />
+                android:background="@drawable/scenic"
+                android:contentDescription="@string/scenic" />
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="other"/>
+                android:text="@string/scenic"/>
         </LinearLayout>
 
     </android.support.v7.widget.GridLayout>
