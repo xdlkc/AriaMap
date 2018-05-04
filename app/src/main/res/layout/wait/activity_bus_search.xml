@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.xidian.aria.ariamap.BusSearchActivity"
+    android:orientation="vertical">
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:layout_marginTop="5dp">
+
+        <EditText
+            android:id="@+id/bus_search_edt"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textSize="20dp"
+            android:singleLine="true"
+            android:hint="公交查询" />
+
+        <ImageButton
+            android:id="@+id/bus_search_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentEnd="true"
+            android:layout_alignRight="@id/bus_search_edt"
+            android:alpha="0.5"
+            android:background="@mipmap/ic_search"
+            android:scaleType="centerInside" />
+    </RelativeLayout>
+    <!--<TextView-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:textColor="#cccccc"-->
+        <!--android:text="公交信息"/>-->
+    <!--<TextView-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:text="公交始发站——终点站"-->
+        <!--android:background="#000000"-->
+        <!--android:textSize="25sp"-->
+        <!--android:gravity="center"/>-->
+    <!--<ListView-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:id="@+id/bus_search_list"-->
+        <!--&gt;-->
+
+    <!--</ListView>-->
+
+
+
+    <TextView
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="哪路公交车"
+        android:background="@drawable/shape"
+        android:textSize="20dp"
+        android:lines="2"/>
+<!--text中的内容需要动态添加如：text.setText(Html.fromHtml("<font color='#ff4461'>"+"哈哈测试:"+"</font>"+"<br>"+"<font color='#ff8833' size='20'>"+"效果怎么样呢"+"</font>"));-->
+<!--需要添加的内容有 全程多少站（共计多少公里）首发站，始发站，到站时间等-->
+</LinearLayout>
