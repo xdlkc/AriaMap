@@ -42,8 +42,8 @@
                 android:layout_height="wrap_content">
                 <ImageButton
                     android:id="@+id/user_btn"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
                     android:background="#00000000"
                     android:scaleType="fitXY"
                     android:src="@drawable/user"

@@ -1,7 +1,6 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingTop="20dp"
@@ -10,17 +9,17 @@
     <LinearLayout
         android:id="@+id/top"
         android:paddingStart="30dp"
+        android:paddingTop="60dp"
+        android:paddingBottom="60dp"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:layout_centerVertical="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        tools:ignore="RtlSymmetry">
+        android:layout_alignParentStart="true">
         <!--头像，昵称信息-->
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="70dp"
             android:orientation="horizontal"
             android:gravity="center_vertical"
             android:layout_gravity="center_vertical"
@@ -28,11 +27,10 @@
             <!--头像上传-->
             <ImageView
                 android:id="@+id/land"
-                android:layout_width="75dp"
-                android:layout_height="75dp"
-                android:scaleType="fitXY"
-                android:src="@drawable/user"
-                android:contentDescription="TODO" />
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/user"
+               />
             <LinearLayout
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
@@ -41,7 +39,7 @@
                 android:orientation="vertical"
                 >
                 <RelativeLayout
-                    android:layout_width="match_parent"
+                    android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     >
                     <TextView
@@ -56,10 +54,11 @@
                     <ImageButton
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true"
-                        android:layout_marginEnd="80dp"
+                        android:layout_marginEnd="60dp"
                         android:layout_width="24dp"
                         android:layout_height="24dp"
-                        android:background="@drawable/setting"/>
+                        android:background="@drawable/set"
+                        android:contentDescription="TODO" />
                 </RelativeLayout>
                 <TextView
                     android:layout_width="wrap_content"
@@ -80,7 +79,8 @@
                 android:layout_width="17dp"
                 android:layout_height="17dp"
                 android:scaleType="fitXY"
-                android:src="@drawable/tap"/>
+                android:src="@drawable/tap"
+                android:contentDescription="TODO" />
             <!--个人标签-->
             <TextView
                 android:layout_marginStart="5dp"

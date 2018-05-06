@@ -48,7 +48,7 @@ public class NearBuildingActivity extends AppCompatActivity {
         marketLayout = findViewById(R.id.market_layout);
         hotelLayout = findViewById(R.id.hotel_layout);
         hospitalLayout = findViewById(R.id.hospital_layout);
-        otherLayout = findViewById(R.id.other_layout);
+        otherLayout = findViewById(R.id.scenic_lay);
         radiusEdt = findViewById(R.id.radius_edt);
         nearLV = findViewById(R.id.near_lv);
         dataList = new ArrayList<>();
