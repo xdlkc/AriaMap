@@ -1,4 +1,4 @@
-package com.xidian.aria.ariamap;
+package com.xidian.aria.ariamap.navs;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -12,6 +12,8 @@ import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import com.xidian.aria.ariamap.R;
 
 /**
  * 地铁线路图

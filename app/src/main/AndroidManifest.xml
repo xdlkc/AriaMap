@@ -57,30 +57,30 @@
 
         <meta-data
             android:name="com.baidu.lbsapi.API_KEY"
-            android:value="HsM7LUKpgk4vgOewGYvHqgB5LPp8ciUu" />
+            android:value="TGQwg4RlNkL53IW11ab4A3GzLvNhmFos"/>
+            <!--android:value="HsM7LUKpgk4vgOewGYvHqgB5LPp8ciUu" />-->
         <!-- android:value="d521WulfOyVh5H5TuNMqjqvxnXgWiSKH" /> -->
         <activity android:name=".ShowMapActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".BusSearchActivity" />
+        <activity android:name=".navs.BusSearchActivity" />
         <activity android:name=".RouteResultActivity" />
         <activity
-            android:name=".LoginActivity"
+            android:name=".navs.LoginActivity"
             android:label="@string/title_activity_login" />
-        <activity android:name=".SubwayActivity" />
+        <activity android:name=".navs.SubwayActivity" />
         <activity android:name=".NearBuildingActivity" />
         <activity android:name=".dengluActivity" />
         <activity android:name=".gerenzhongxinActivity" />
         <activity android:name=".zhuceActivity" />
         <activity android:name=".chongzhimimaActivity" />
         <activity android:name=".WallentActivity" />
-        <activity android:name=".HistoryTodayActivity" />
+        <activity android:name=".navs.HistoryTodayActivity" />
         <activity android:name=".tests.TestActivity" />
-        <activity android:name=".FaceLoginActivity"></activity>
+        <activity android:name=".navs.FaceLoginActivity"></activity>
     </application>
 
 </manifest>

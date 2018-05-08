@@ -2,7 +2,9 @@
 package com.xidian.aria.ariamap;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -12,12 +14,14 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.SimpleAdapter;
 import android.widget.Toast;
 
 import com.baidu.location.BDAbstractLocationListener;
@@ -34,6 +38,7 @@ import com.baidu.mapapi.map.MapStatusUpdate;
 import com.baidu.mapapi.map.MapStatusUpdateFactory;
 import com.baidu.mapapi.map.MapView;
 import com.baidu.mapapi.map.MarkerOptions;
+import com.baidu.mapapi.map.Overlay;
 import com.baidu.mapapi.map.OverlayOptions;
 import com.baidu.mapapi.model.LatLng;
 import com.baidu.mapapi.search.sug.OnGetSuggestionResultListener;
@@ -48,10 +53,15 @@ import com.iflytek.cloud.SpeechError;
 import com.iflytek.cloud.SpeechUtility;
 import com.iflytek.cloud.ui.RecognizerDialog;
 import com.iflytek.cloud.ui.RecognizerDialogListener;
+import com.xidian.aria.ariamap.navs.BusSearchActivity;
+import com.xidian.aria.ariamap.navs.FaceLoginActivity;
+import com.xidian.aria.ariamap.navs.SubwayActivity;
 import com.xidian.aria.ariamap.parcelables.ParcelableMapData;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 地图首页
@@ -100,18 +110,27 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
     // 建议搜索地点对应的坐标
     private List<LatLng> sugPoiList;
     private SuggestionSearch mSuggestionSearch = null;
-    // 建议搜索地点适配器
-    private ArrayAdapter<String> sugAdapter;
     // 侧边栏
     private NavigationView navigationView = null;
     // 起点坐标
     private LatLng startPoi;
     private LatLng endPoi;
     // 语音
-    InitListener initListener;
+    private InitListener initListener;
     // 录音框
-    RecognizerDialogListener recognizerDialogListener;
-    StringBuilder speechBuilder;
+    private RecognizerDialogListener recognizerDialogListener;
+    private StringBuilder speechBuilder;
+    // 除了地图，其他控件是否展示
+    private boolean isVisible = true;
+    private RelativeLayout mapLayout;
+    private SimpleAdapter simpleAdapter;
+    private List<HashMap<String, Object>> data;
+    // 自动补全的地址的key
+    private static String INFO_KEY = "地址名称";
+    BitmapDescriptor startDesc;
+    Overlay startOverlay = null;
+    BitmapDescriptor endDesc;
+    Overlay endOverlay = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -132,6 +151,9 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
         enAutoTw = (AutoCompleteTextView) findViewById(R.id.endAutoTw);
         mSuggestionSearch = SuggestionSearch.newInstance();
         navigationView = (NavigationView) findViewById(R.id.user_nav);
+        mapLayout = findViewById(R.id.map_layout);
+        startDesc = BitmapDescriptorFactory.fromResource(R.drawable.icon_st);
+        endDesc = BitmapDescriptorFactory.fromResource(R.drawable.icon_en);
         speechBuilder = new StringBuilder();
     }
 
@@ -154,17 +176,14 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
     }
 
     /**
-     * 地图单击事件
+     * 地图单击事件,单击后隐藏其他控件
      * @param point
      */
     @Override
     public void onMapClick(LatLng point) {
-        mBaiduMap.hideInfoWindow();
-        mBaiduMap.clear();
-        BitmapDescriptor descriptor = BitmapDescriptorFactory.fromResource(R.drawable.icon_st);
-        OverlayOptions options = new MarkerOptions().position(point).icon(descriptor);
-        mBaiduMap.addOverlay(options);
-        startPoi = point;
+        AnimationUtils.showAndHiddenAnimation(navigationView, isVisible, 1000);
+        AnimationUtils.showAndHiddenAnimation(mapLayout,isVisible,1000);
+        isVisible = !isVisible;
     }
 
     /**
@@ -176,11 +195,24 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
     public boolean onMapPoiClick(MapPoi poi) {
         mBaiduMap.hideInfoWindow();
         mBaiduMap.clear();
-        BitmapDescriptor descriptor = BitmapDescriptorFactory.fromResource(R.drawable.icon_st);
-        OverlayOptions options = new MarkerOptions().position(poi.getPosition()).icon(descriptor);
-        mBaiduMap.addOverlay(options);
-        startPoi = poi.getPosition();
+        setStartPoi(poi.getPosition());
         return true;
+    }
+    public void setStartPoi(LatLng poi){
+        OverlayOptions options = new MarkerOptions().position(poi).icon(startDesc);
+        if (startOverlay != null){
+            startOverlay.remove();
+        }
+        startOverlay = mBaiduMap.addOverlay(options);
+        startPoi = poi;
+    }
+    public void setEndPoi(LatLng poi){
+        OverlayOptions options = new MarkerOptions().position(poi).icon(endDesc);
+        if (endOverlay != null){
+            endOverlay.remove();
+        }
+        endOverlay = mBaiduMap.addOverlay(options);
+        endPoi = poi;
     }
 
     /**
@@ -498,6 +530,9 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
      * 初始化地点提示部分
      */
     public void initSearchComplete(){
+        data = new ArrayList<>();
+        simpleAdapter = new MySimpleAdapter(getApplicationContext(),data,R.layout.input,new String[]{INFO_KEY},new int[]{R.id.region_tv});
+        enAutoTw.setAdapter(simpleAdapter);
         OnGetSuggestionResultListener listener = new OnGetSuggestionResultListener() {
             public void onGetSuggestionResult(SuggestionResult res) {
                 if (res == null || res.getAllSuggestions() == null) {
@@ -506,17 +541,46 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
                 }
                 sugStrList = new ArrayList<String>();
                 sugPoiList = new ArrayList<LatLng>();
+                data.clear();
                 for (SuggestionResult.SuggestionInfo info : res.getAllSuggestions()) {
-                    if (info.key != null)
+                    if (info.key != null) {
                         sugStrList.add(info.key);
                         sugPoiList.add(info.pt);
+                        HashMap<String, Object> hashMap = new HashMap<>();
+                        hashMap.put(INFO_KEY, info.key);
+                        data.add(hashMap);
+                        simpleAdapter.notifyDataSetChanged();
+                    }
                 }
-                sugAdapter = new ArrayAdapter<String>(ShowMapActivity.this, android.R.layout.simple_dropdown_item_1line, sugStrList);
-                enAutoTw.setAdapter(sugAdapter);
-                sugAdapter.notifyDataSetChanged();
+
             }
         };
         mSuggestionSearch.setOnGetSuggestionResultListener(listener);
+    }
+    class MySimpleAdapter extends SimpleAdapter{
+        @Override
+        public View getView(final int position, View convertView, ViewGroup parent) {
+            View v =  super.getView(position, convertView, parent);
+            @SuppressLint("WrongViewCast") ImageButton startBtn = v.findViewById(R.id.setting_start);
+            @SuppressLint("WrongViewCast") ImageButton endBtn = v.findViewById(R.id.setting_end);
+            startBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    setStartPoi(sugPoiList.get(position));
+                }
+            });
+            endBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    setEndPoi(sugPoiList.get(position));
+                }
+            });
+            return v;
+        }
+
+        public MySimpleAdapter(Context context, List<? extends Map<String, ?>> data, int resource, String[] from, int[] to) {
+            super(context, data, resource, from, to);
+        }
     }
 
     /**

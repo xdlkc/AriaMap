@@ -1,7 +1,9 @@
-package com.xidian.aria.ariamap;
+package com.xidian.aria.ariamap.navs;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+
+import com.xidian.aria.ariamap.R;
 
 /**
  * 历史上的今天模块

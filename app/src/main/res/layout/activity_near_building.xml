@@ -38,7 +38,7 @@
                 android:text="@string/food"/>
         </LinearLayout>
         <LinearLayout
-            android:id="@+id/cinema_layout"
+            android:id="@+id/play_layout"
             android:orientation="vertical"
             android:layout_margin="1dp"
             app:layout_rowWeight="1"
@@ -49,11 +49,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/cinema"
-                android:contentDescription="@string/cinema" />
+                android:contentDescription="@string/play" />
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/cinema"/>
+                android:text="@string/play"/>
         </LinearLayout>
         <LinearLayout
             android:id="@+id/market_layout"

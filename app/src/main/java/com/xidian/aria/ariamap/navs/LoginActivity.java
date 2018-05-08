@@ -1,4 +1,4 @@
-package com.xidian.aria.ariamap;
+package com.xidian.aria.ariamap.navs;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -30,6 +30,8 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+
+import com.xidian.aria.ariamap.R;
 
 import java.util.ArrayList;
 import java.util.List;

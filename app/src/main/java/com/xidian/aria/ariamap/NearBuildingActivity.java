@@ -26,11 +26,11 @@ import java.util.List;
 public class NearBuildingActivity extends AppCompatActivity {
     private TextInputEditText radiusEdt;
     private LinearLayout foodLayout;
-    private LinearLayout cinemaLayout;
+    private LinearLayout playLayout;
     private LinearLayout marketLayout;
     private LinearLayout hotelLayout;
     private LinearLayout hospitalLayout;
-    private LinearLayout otherLayout;
+    private LinearLayout scenicLayout;
     private ListView nearLV;
     private ArrayAdapter<String> arrayAdapter;
     private List<String > dataList;
@@ -44,18 +44,17 @@ public class NearBuildingActivity extends AppCompatActivity {
         setContentView(R.layout.activity_near_building);
         gridLayout = findViewById(R.id.grid_lay);
         foodLayout = findViewById(R.id.food_layout);
-        cinemaLayout = findViewById(R.id.cinema_layout);
+        playLayout = findViewById(R.id.play_layout);
         marketLayout = findViewById(R.id.market_layout);
         hotelLayout = findViewById(R.id.hotel_layout);
         hospitalLayout = findViewById(R.id.hospital_layout);
-        otherLayout = findViewById(R.id.scenic_lay);
+        scenicLayout = findViewById(R.id.scenic_lay);
         radiusEdt = findViewById(R.id.radius_edt);
         nearLV = findViewById(R.id.near_lv);
         dataList = new ArrayList<>();
         Intent intent = getIntent();
 
         centerPoi = intent.getParcelableExtra("center");
-        System.out.println(centerPoi);
         poiSearchResultListener = new OnGetPoiSearchResultListener() {
             @Override
             public void onGetPoiResult(PoiResult poiResult) {
@@ -87,13 +86,13 @@ public class NearBuildingActivity extends AppCompatActivity {
         foodLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                searchPoiByKeyword("餐厅");
+                searchPoiByKeyword("美食");
             }
         });
-        cinemaLayout.setOnClickListener(new View.OnClickListener() {
+        playLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                searchPoiByKeyword("KTV");
+                searchPoiByKeyword("休闲娱乐");
             }
         });
         marketLayout.setOnClickListener(new View.OnClickListener() {
@@ -114,10 +113,10 @@ public class NearBuildingActivity extends AppCompatActivity {
                 searchPoiByKeyword("医院");
             }
         });
-        otherLayout.setOnClickListener(new View.OnClickListener() {
+        scenicLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                searchPoiByKeyword("待定");
+                searchPoiByKeyword("景点");
             }
         });
     }

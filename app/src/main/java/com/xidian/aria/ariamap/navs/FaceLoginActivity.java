@@ -1,4 +1,4 @@
-package com.xidian.aria.ariamap;
+package com.xidian.aria.ariamap.navs;
 
 import android.Manifest;
 import android.app.Activity;
@@ -24,6 +24,7 @@ import com.iflytek.cloud.IdentityVerifier;
 import com.iflytek.cloud.InitListener;
 import com.iflytek.cloud.SpeechConstant;
 import com.iflytek.cloud.SpeechError;
+import com.xidian.aria.ariamap.R;
 
 import java.io.File;
 import java.io.FileNotFoundException;

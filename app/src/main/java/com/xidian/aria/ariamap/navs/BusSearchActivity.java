@@ -1,4 +1,4 @@
-package com.xidian.aria.ariamap;
+package com.xidian.aria.ariamap.navs;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -22,6 +22,7 @@ import com.baidu.mapapi.search.poi.PoiDetailResult;
 import com.baidu.mapapi.search.poi.PoiIndoorResult;
 import com.baidu.mapapi.search.poi.PoiResult;
 import com.baidu.mapapi.search.poi.PoiSearch;
+import com.xidian.aria.ariamap.R;
 
 import java.util.ArrayList;
 import java.util.List;
