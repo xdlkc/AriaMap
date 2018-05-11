@@ -2,20 +2,21 @@
 package com.xidian.aria.ariamap;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -29,6 +30,11 @@ import com.baidu.location.BDLocation;
 import com.baidu.location.LocationClient;
 import com.baidu.location.LocationClientOption;
 import com.baidu.mapapi.SDKInitializer;
+import com.baidu.mapapi.bikenavi.BikeNavigateHelper;
+import com.baidu.mapapi.bikenavi.adapter.IBEngineInitListener;
+import com.baidu.mapapi.bikenavi.adapter.IBRoutePlanListener;
+import com.baidu.mapapi.bikenavi.model.BikeRoutePlanError;
+import com.baidu.mapapi.bikenavi.params.BikeNaviLaunchParam;
 import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.BitmapDescriptor;
 import com.baidu.mapapi.map.BitmapDescriptorFactory;
@@ -45,6 +51,11 @@ import com.baidu.mapapi.search.sug.OnGetSuggestionResultListener;
 import com.baidu.mapapi.search.sug.SuggestionResult;
 import com.baidu.mapapi.search.sug.SuggestionSearch;
 import com.baidu.mapapi.search.sug.SuggestionSearchOption;
+import com.baidu.mapapi.walknavi.WalkNavigateHelper;
+import com.baidu.mapapi.walknavi.adapter.IWEngineInitListener;
+import com.baidu.mapapi.walknavi.adapter.IWRoutePlanListener;
+import com.baidu.mapapi.walknavi.model.WalkRoutePlanError;
+import com.baidu.mapapi.walknavi.params.WalkNaviLaunchParam;
 import com.google.gson.Gson;
 import com.iflytek.cloud.InitListener;
 import com.iflytek.cloud.RecognizerResult;
@@ -61,7 +72,6 @@ import com.xidian.aria.ariamap.parcelables.ParcelableMapData;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 地图首页
@@ -131,6 +141,13 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
     Overlay startOverlay = null;
     BitmapDescriptor endDesc;
     Overlay endOverlay = null;
+    ArrayAdapter<String > arrayAdapter;
+    List<String > datas;
+
+    private BikeNavigateHelper mNaviHelper;
+    private WalkNavigateHelper mWNaviHelper;
+    BikeNaviLaunchParam param;
+    WalkNaviLaunchParam walkParam;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -313,6 +330,7 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
     public void onClick(View v) {
         MapStatus mMapStatus;
         MapStatusUpdate mMapStatusUpdate;
+        Intent intent;
         switch (v.getId()){
             case R.id.satellite_btn:
                 if (mapType == BaiduMap.MAP_TYPE_NORMAL){
@@ -353,7 +371,7 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
                     toast.show();
                 }else {
                     if (endPoi != null){
-                        Intent intent = new Intent(getApplicationContext(),RouteResultActivity.class);
+                        intent = new Intent(getApplicationContext(),RouteResultActivity.class);
                         ParcelableMapData parcelableMapData = new ParcelableMapData(mBaiduMap,city,centerPoint,zoomLevel,startPoi,endPoi);
                         intent.putExtra("map", parcelableMapData);
                         startActivity(intent);
@@ -362,9 +380,13 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
                 }
                 break;
             case R.id.nav_btn:
+                if (endPoi == null){
+                    Toast.makeText(getApplicationContext(),"未确定目标地点!",Toast.LENGTH_SHORT).show();
+                }
+                initMapGuide();
                 break;
             case R.id.near_btn:
-                Intent intent = new Intent(getApplicationContext(),NearBuildingActivity.class);
+                intent = new Intent(getApplicationContext(),NearBuildingActivity.class);
                 intent.putExtra("center",centerPoint);
                 startActivity(intent);
                 break;
@@ -417,34 +439,7 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
             }
         });
         navigationView.setNavigationItemSelectedListener(this);
-        // 设置提示开始长度
-        enAutoTw.setThreshold(1);
-        enAutoTw.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
-            }
-
-            @Override
-            public void onTextChanged(CharSequence cs, int i, int i1, int i2) {
-                if (cs.length() <= 0) {
-                    return;
-                }
-                mSuggestionSearch
-                        .requestSuggestion((new SuggestionSearchOption())
-                                .keyword(cs.toString()).city(city));
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-            }
-        });
-        enAutoTw.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                endPoi = sugPoiList.get(position);
-            }
-        });
         voiceBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -530,57 +525,60 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
      * 初始化地点提示部分
      */
     public void initSearchComplete(){
-        data = new ArrayList<>();
-        simpleAdapter = new MySimpleAdapter(getApplicationContext(),data,R.layout.input,new String[]{INFO_KEY},new int[]{R.id.region_tv});
-        enAutoTw.setAdapter(simpleAdapter);
+        datas = new ArrayList<>();
+//        arrayAdapter = new ArrayAdapter<String>(this,R.layout.input,R.id.region_tv,datas);
+        // 设置提示开始长度
+        enAutoTw.setThreshold(1);
+        enAutoTw.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence cs, int i, int i1, int i2) {
+                if (cs.length() <= 0) {
+                    return;
+                }
+                mSuggestionSearch
+                        .requestSuggestion((new SuggestionSearchOption())
+                                .keyword(cs.toString()).city(city));
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+            }
+        });
+        enAutoTw.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                endPoi = sugPoiList.get(i);
+            }
+        });
+//        enAutoTw.setAdapter(arrayAdapter);
         OnGetSuggestionResultListener listener = new OnGetSuggestionResultListener() {
             public void onGetSuggestionResult(SuggestionResult res) {
                 if (res == null || res.getAllSuggestions() == null) {
                     return ;
                     //未找到相关结果
                 }
-                sugStrList = new ArrayList<String>();
-                sugPoiList = new ArrayList<LatLng>();
-                data.clear();
+                System.out.println("进入监听器");
+                sugStrList = new ArrayList<>();
+                sugPoiList = new ArrayList<>();
+                datas = new ArrayList<>();
                 for (SuggestionResult.SuggestionInfo info : res.getAllSuggestions()) {
                     if (info.key != null) {
                         sugStrList.add(info.key);
                         sugPoiList.add(info.pt);
-                        HashMap<String, Object> hashMap = new HashMap<>();
-                        hashMap.put(INFO_KEY, info.key);
-                        data.add(hashMap);
-                        simpleAdapter.notifyDataSetChanged();
+                        datas.add(info.key);
                     }
                 }
+                enAutoTw.setAdapter(new ArrayAdapter<>(getApplicationContext(),R.layout.support_simple_spinner_dropdown_item, datas));
 
             }
         };
         mSuggestionSearch.setOnGetSuggestionResultListener(listener);
-    }
-    class MySimpleAdapter extends SimpleAdapter{
-        @Override
-        public View getView(final int position, View convertView, ViewGroup parent) {
-            View v =  super.getView(position, convertView, parent);
-            @SuppressLint("WrongViewCast") ImageButton startBtn = v.findViewById(R.id.setting_start);
-            @SuppressLint("WrongViewCast") ImageButton endBtn = v.findViewById(R.id.setting_end);
-            startBtn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    setStartPoi(sugPoiList.get(position));
-                }
-            });
-            endBtn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    setEndPoi(sugPoiList.get(position));
-                }
-            });
-            return v;
-        }
-
-        public MySimpleAdapter(Context context, List<? extends Map<String, ?>> data, int resource, String[] from, int[] to) {
-            super(context, data, resource, from, to);
-        }
     }
 
     /**
@@ -599,5 +597,138 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
         mDialog.setListener( recognizerDialogListener );
         //4.显示 dialog，接收语音输入
         mDialog.show();
+    }
+    private void initMapGuide(){
+        try {
+            mNaviHelper = BikeNavigateHelper.getInstance();
+            mWNaviHelper = WalkNavigateHelper.getInstance();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        param = new BikeNaviLaunchParam().stPt(centerPoint).endPt(endPoi);
+        walkParam = new WalkNaviLaunchParam().stPt(centerPoint).endPt(endPoi);
+        //    通过AlertDialog.Builder这个类来实例化我们的一个AlertDialog的对象
+        AlertDialog.Builder builder = new AlertDialog.Builder(ShowMapActivity.this);
+        //    设置Title的图标
+//        builder.setIcon(R.drawable.ic_launcher);
+        //    设置Title的内容
+        builder.setTitle("选择导航方式");
+        //    设置一个PositiveButton
+        builder.setPositiveButton("骑车", new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick(DialogInterface dialog, int which)
+            {
+                startBikeNavi();
+            }
+        });
+        //    设置一个NegativeButton
+        builder.setNegativeButton("步行", new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick(DialogInterface dialog, int which)
+            {
+                startWalkNavi();
+            }
+        });
+        //    设置一个NeutralButton
+        builder.setNeutralButton("返回", new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick(DialogInterface dialog, int which)
+            {
+//                finish();
+                return;
+            }
+        });
+        //    显示出该对话框
+        builder.show();
+    }
+
+    private void startBikeNavi() {
+        Log.d("View", "startBikeNavi");
+        try {
+            mNaviHelper.initNaviEngine(this, new IBEngineInitListener() {
+                @Override
+                public void engineInitSuccess() {
+                    Log.d("View", "engineInitSuccess");
+                    routePlanWithParam();
+                }
+
+                @Override
+                public void engineInitFail() {
+                    Log.d("View", "engineInitFail");
+                }
+            });
+        } catch (Exception e) {
+            Log.d("Exception", "startBikeNavi");
+            e.printStackTrace();
+        }
+    }
+
+    private void startWalkNavi() {
+        Log.d("View", "startBikeNavi");
+        try {
+            mWNaviHelper.initNaviEngine(this, new IWEngineInitListener() {
+                @Override
+                public void engineInitSuccess() {
+                    Log.d("View", "engineInitSuccess");
+                    routePlanWithWalkParam();
+                }
+
+                @Override
+                public void engineInitFail() {
+                    Log.d("View", "engineInitFail");
+                }
+            });
+        } catch (Exception e) {
+            Log.d("Exception", "startBikeNavi");
+            e.printStackTrace();
+        }
+    }
+
+    private void routePlanWithParam() {
+        mNaviHelper.routePlanWithParams(param, new IBRoutePlanListener() {
+            @Override
+            public void onRoutePlanStart() {
+                Log.d("View", "onRoutePlanStart");
+            }
+
+            @Override
+            public void onRoutePlanSuccess() {
+                Log.d("View", "onRoutePlanSuccess");
+                Intent intent = new Intent();
+                intent.setClass(getApplicationContext(), BNaviGuideActivity.class);
+                startActivity(intent);
+            }
+
+            @Override
+            public void onRoutePlanFail(BikeRoutePlanError error) {
+                Log.d("View", "onRoutePlanFail");
+            }
+
+        });
+    }
+    private void routePlanWithWalkParam() {
+        mWNaviHelper.routePlanWithParams(walkParam, new IWRoutePlanListener() {
+            @Override
+            public void onRoutePlanStart() {
+                Log.d("View", "onRoutePlanStart");
+            }
+
+            @Override
+            public void onRoutePlanSuccess() {
+                Log.d("View", "onRoutePlanSuccess");
+                Intent intent = new Intent();
+                intent.setClass(getApplicationContext(), WNaviGuideActivity.class);
+                startActivity(intent);
+            }
+
+            @Override
+            public void onRoutePlanFail(WalkRoutePlanError error) {
+                Log.d("View", "onRoutePlanFail");
+            }
+
+        });
     }
 }

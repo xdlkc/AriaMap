@@ -51,6 +51,7 @@
                     android:id="@+id/endAutoTw"
                     android:layout_width="290dp"
                     android:layout_height="wrap_content"
+
                     android:singleLine="true"
                     android:completionThreshold="3"
                     android:hint="@string/input_end"/>
