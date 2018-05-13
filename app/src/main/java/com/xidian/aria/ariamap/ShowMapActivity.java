@@ -69,6 +69,7 @@ import com.iflytek.cloud.ui.RecognizerDialogListener;
 import com.xidian.aria.ariamap.calwalk.activity.MainActivity;
 import com.xidian.aria.ariamap.navs.BusSearchActivity;
 import com.xidian.aria.ariamap.navs.FaceLoginActivity;
+import com.xidian.aria.ariamap.navs.HistoryTodayActivity;
 import com.xidian.aria.ariamap.navs.SubwayActivity;
 import com.xidian.aria.ariamap.parcelables.ParcelableMapData;
 
@@ -337,7 +338,8 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
                 Toast.makeText(getApplicationContext(), R.string.wallet_menu, Toast.LENGTH_SHORT).show();
                 break;
             case R.id.history_today:
-                Toast.makeText(getApplicationContext(), R.string.history_menu, Toast.LENGTH_SHORT).show();
+                intent = new Intent(getApplicationContext(), HistoryTodayActivity.class);
+                startActivity(intent);
                 break;
             case R.id.step_item:
                 intent = new Intent(getApplicationContext(), MainActivity.class);

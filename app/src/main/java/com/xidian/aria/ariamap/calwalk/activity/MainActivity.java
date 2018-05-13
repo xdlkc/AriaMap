@@ -7,6 +7,7 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -21,6 +22,7 @@ import com.xidian.aria.ariamap.calwalk.view.StepArcView;
  * 记步主页
  */
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+    private static final String TAG = MainActivity.class.getSimpleName();
     private TextView tv_data;
     private StepArcView cc;
     private TextView tv_set;
@@ -37,7 +39,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_cal_walk_main);
         assignViews();
         initData();
         addListener();
@@ -107,7 +109,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
          */
         @Override
         public void onServiceDisconnected(ComponentName name) {
-
+            Log.d(TAG,"onServiceDisconnected");
         }
     };
 

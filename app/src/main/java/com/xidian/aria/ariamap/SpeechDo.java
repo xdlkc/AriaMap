@@ -2,6 +2,9 @@ package com.xidian.aria.ariamap;
 
 import java.util.List;
 
+/**
+ * 讯飞语音识别接口返回数据
+ */
 public class SpeechDo {
     Integer sn;
     Boolean ls;
