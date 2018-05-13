@@ -27,9 +27,9 @@
             <!--头像上传-->
             <ImageView
                 android:id="@+id/land"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:background="@drawable/user"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:background="@drawable/ic_account_circle"
                />
             <LinearLayout
                 android:layout_width="fill_parent"
@@ -52,22 +52,15 @@
                         android:textSize="16sp" />
                     <!--设置图片按钮-->
                     <ImageButton
+                        android:id="@+id/nav_set_btn"
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true"
                         android:layout_marginEnd="60dp"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:background="@drawable/set"
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:background="@drawable/ic_settings"
                         android:contentDescription="TODO" />
                 </RelativeLayout>
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginStart="10dp"
-                    android:text="账 号"
-                    android:textColor="@android:color/secondary_text_light_nodisable"
-                    android:textSize="16sp" />
             </LinearLayout>
         </LinearLayout>
         <LinearLayout

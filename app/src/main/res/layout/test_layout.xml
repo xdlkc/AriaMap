@@ -40,7 +40,7 @@
         android:layout_below="@id/linearLayout">
 
         <ImageButton
-            android:id="@+id/setting_start"
+            android:id="@+id/set_start"
             android:layout_width="80dp"
             android:layout_height="25dp"
             android:layout_marginStart="40dp"
@@ -55,7 +55,7 @@
             android:textSize="15sp" />
 
         <ImageButton
-            android:id="@+id/setting_end"
+            android:id="@+id/set_end"
             android:layout_width="80dp"
             android:layout_height="25dp"
             android:layout_gravity="end"

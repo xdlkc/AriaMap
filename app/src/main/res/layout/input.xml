@@ -1,56 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:layout_width="300dp"
+    android:layout_height="100dp"
+    android:background="@drawable/popup">
 
-<TextView
-    android:id="@+id/region_tv"
+    <TextView
+    android:id="@+id/poi_name_tv"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-
     android:text="具体地址"
     android:textSize="20sp"/>
-
-    <FrameLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:layout_below="@id/poi_name_tv"
+        android:layout_alignParentBottom="true">
 
         <ImageButton
-            android:id="@+id/setting_start"
-            android:layout_width="80dp"
-            android:layout_height="25dp"
-            android:layout_marginStart="40dp"
-            android:background="@drawable/button" />
-
+            android:id="@+id/set_start"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:background="@drawable/ic_set_start"
+            />
         <TextView
-            android:layout_width="80dp"
-            android:layout_height="25dp"
-            android:layout_marginStart="50dp"
-            android:text="设为起点"
-            android:textColor="@color/white"
-            android:textSize="15sp" />
-
+            android:id="@+id/set_start_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:layout_toEndOf="@id/set_start"
+            android:text="设为起点"/>
         <ImageButton
-            android:id="@+id/setting_end"
-            android:layout_width="80dp"
-            android:layout_height="25dp"
-            android:layout_gravity="end"
-            android:layout_marginEnd="40dp"
-            android:background="@drawable/button" />
-
+            android:id="@+id/set_end"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:layout_toRightOf="@id/set_start_tv"
+            android:background="@drawable/ic_set_end" />
         <TextView
-            android:layout_width="80dp"
-            android:layout_height="25dp"
-            android:layout_marginEnd="30dp"
-            android:layout_gravity="end"
-            android:text="设为终点"
-            android:textColor="@color/white"
-            android:textSize="15sp" />
-    </FrameLayout>
+            android:id="@+id/set_end_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:layout_toRightOf="@id/set_end"
+            android:text="设为终点"/>
+    </RelativeLayout>
 
-
-
-
-</LinearLayout>
+</RelativeLayout>

@@ -44,7 +44,7 @@
                     android:layout_height="40dp"
                     android:background="#00000000"
                     android:scaleType="fitXY"
-                    android:src="@drawable/user"
+                    android:src="@drawable/ic_account_circle"
                     android:contentDescription="@string/setting" />
 
                 <AutoCompleteTextView

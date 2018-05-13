@@ -13,6 +13,7 @@ import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -22,7 +23,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.SimpleAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.baidu.location.BDAbstractLocationListener;
@@ -38,6 +39,7 @@ import com.baidu.mapapi.bikenavi.params.BikeNaviLaunchParam;
 import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.BitmapDescriptor;
 import com.baidu.mapapi.map.BitmapDescriptorFactory;
+import com.baidu.mapapi.map.InfoWindow;
 import com.baidu.mapapi.map.MapPoi;
 import com.baidu.mapapi.map.MapStatus;
 import com.baidu.mapapi.map.MapStatusUpdate;
@@ -64,19 +66,21 @@ import com.iflytek.cloud.SpeechError;
 import com.iflytek.cloud.SpeechUtility;
 import com.iflytek.cloud.ui.RecognizerDialog;
 import com.iflytek.cloud.ui.RecognizerDialogListener;
+import com.xidian.aria.ariamap.calwalk.activity.MainActivity;
 import com.xidian.aria.ariamap.navs.BusSearchActivity;
 import com.xidian.aria.ariamap.navs.FaceLoginActivity;
 import com.xidian.aria.ariamap.navs.SubwayActivity;
 import com.xidian.aria.ariamap.parcelables.ParcelableMapData;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 /**
  * 地图首页
  */
-public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickListener, NavigationView.OnNavigationItemSelectedListener,View.OnClickListener{
+public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickListener,
+        NavigationView.OnNavigationItemSelectedListener,View.OnClickListener,
+        OnGetSuggestionResultListener{
     // 地图显示组件
     private MapView mMapView = null;
     // 地图
@@ -133,21 +137,17 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
     // 除了地图，其他控件是否展示
     private boolean isVisible = true;
     private RelativeLayout mapLayout;
-    private SimpleAdapter simpleAdapter;
-    private List<HashMap<String, Object>> data;
-    // 自动补全的地址的key
-    private static String INFO_KEY = "地址名称";
-    BitmapDescriptor startDesc;
-    Overlay startOverlay = null;
-    BitmapDescriptor endDesc;
-    Overlay endOverlay = null;
-    ArrayAdapter<String > arrayAdapter;
-    List<String > datas;
-
+    private BitmapDescriptor startDesc;
+    private Overlay startOverlay = null;
+    private BitmapDescriptor endDesc;
+    private Overlay endOverlay = null;
+    private ArrayList<String > inputSugData;
+    private ArrayAdapter<String > arrayAdapter;
     private BikeNavigateHelper mNaviHelper;
     private WalkNavigateHelper mWNaviHelper;
-    BikeNaviLaunchParam param;
-    WalkNaviLaunchParam walkParam;
+    private BikeNaviLaunchParam param;
+    private WalkNaviLaunchParam walkParam;
+    private OnGetSuggestionResultListener listener;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -211,8 +211,30 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
     @Override
     public boolean onMapPoiClick(MapPoi poi) {
         mBaiduMap.hideInfoWindow();
-        mBaiduMap.clear();
-        setStartPoi(poi.getPosition());
+        RelativeLayout relativeLayout = (RelativeLayout) LayoutInflater.from(getApplicationContext()).inflate(R.layout.input,null);
+        TextView textView = relativeLayout.findViewById(R.id.poi_name_tv);
+        textView.setText(poi.getName());
+
+        final LatLng inputPoi = poi.getPosition();
+        ImageButton setStartBtn = relativeLayout.findViewById(R.id.set_start);
+        setStartBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setStartPoi(inputPoi);
+                mBaiduMap.hideInfoWindow();
+            }
+        });
+        ImageButton setEndBtn = relativeLayout.findViewById(R.id.set_end);
+        setEndBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setEndPoi(inputPoi);
+                mBaiduMap.hideInfoWindow();
+            }
+        });
+        InfoWindow mInfoWindow = new InfoWindow(relativeLayout, inputPoi, -47);
+        //显示InfoWindow
+        mBaiduMap.showInfoWindow(mInfoWindow);
         return true;
     }
     public void setStartPoi(LatLng poi){
@@ -318,7 +340,8 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
                 Toast.makeText(getApplicationContext(), R.string.history_menu, Toast.LENGTH_SHORT).show();
                 break;
             case R.id.step_item:
-                Toast.makeText(getApplicationContext(), R.string.step_menu, Toast.LENGTH_SHORT).show();
+                intent = new Intent(getApplicationContext(), MainActivity.class);
+                startActivity(intent);
                 break;
             default:
                 break;
@@ -365,19 +388,15 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
                 mBaiduMap.setMapStatus(mMapStatusUpdate);
                 break;
             case R.id.way_btn:
-                String endStr = enAutoTw.getText().toString();
-                if (endStr.equals("")){
+                if (endPoi == null){
                     Toast toast = Toast.makeText(getApplicationContext(),"请输入目标位置！",Toast.LENGTH_SHORT);
                     toast.show();
-                }else {
-                    if (endPoi != null){
-                        intent = new Intent(getApplicationContext(),RouteResultActivity.class);
-                        ParcelableMapData parcelableMapData = new ParcelableMapData(mBaiduMap,city,centerPoint,zoomLevel,startPoi,endPoi);
-                        intent.putExtra("map", parcelableMapData);
-                        startActivity(intent);
-                    }
-
+                    break;
                 }
+                intent = new Intent(getApplicationContext(),RouteResultActivity.class);
+                ParcelableMapData parcelableMapData = new ParcelableMapData(mBaiduMap,city,centerPoint,zoomLevel,startPoi,endPoi);
+                intent.putExtra("map", parcelableMapData);
+                startActivity(intent);
                 break;
             case R.id.nav_btn:
                 if (endPoi == null){
@@ -391,6 +410,25 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
                 startActivity(intent);
                 break;
         }
+    }
+
+    @Override
+    public void onGetSuggestionResult(SuggestionResult res) {
+        if (res == null || res.getAllSuggestions() == null) {
+            return ;
+            //未找到相关结果
+        }
+        sugStrList = new ArrayList<>();
+        sugPoiList = new ArrayList<>();
+//        arrayAdapter.clear();
+        for (SuggestionResult.SuggestionInfo info : res.getAllSuggestions()) {
+            if (info.key != null) {
+                sugStrList.add(info.key);
+                sugPoiList.add(info.pt);
+                arrayAdapter.add(info.key);
+            }
+        }
+        arrayAdapter.notifyDataSetChanged();
     }
 
     /**
@@ -429,8 +467,16 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
     private void initComponents(){
         SpeechUtility.createUtility(this, SpeechConstant.APPID +"=5ae49d2d");
         //登录
-        View drawview_head = navigationView.inflateHeaderView(R.layout.left_head_layout);
-        ImageView user_pic = (ImageView) drawview_head.findViewById(R.id.land);
+        View navView = navigationView.inflateHeaderView(R.layout.left_head_layout);
+        ImageView user_pic = (ImageView) navView.findViewById(R.id.land);
+        ImageButton imageButton = navView.findViewById(R.id.nav_set_btn);
+        imageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+//                Intent intent = new Intent(getApplicationContext(),SettingsActivity.class);
+//                startActivity(intent);
+            }
+        });
         user_pic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -525,60 +571,38 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
      * 初始化地点提示部分
      */
     public void initSearchComplete(){
-        datas = new ArrayList<>();
-//        arrayAdapter = new ArrayAdapter<String>(this,R.layout.input,R.id.region_tv,datas);
+        inputSugData = new ArrayList<>();
+        arrayAdapter = new ArrayAdapter<>(getApplicationContext(),R.layout.support_simple_spinner_dropdown_item, inputSugData);
+        enAutoTw.setAdapter(arrayAdapter);
         // 设置提示开始长度
         enAutoTw.setThreshold(1);
         enAutoTw.addTextChangedListener(new TextWatcher() {
             @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
             }
-
             @Override
             public void onTextChanged(CharSequence cs, int i, int i1, int i2) {
-                if (cs.length() <= 0) {
+
+            }
+            @Override
+            public void afterTextChanged(Editable editable) {
+                if (editable.toString().length() <= 0) {
                     return;
                 }
                 mSuggestionSearch
                         .requestSuggestion((new SuggestionSearchOption())
-                                .keyword(cs.toString()).city(city));
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
+                                .keyword(editable.toString()).city(city));
             }
         });
         enAutoTw.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                endPoi = sugPoiList.get(i);
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                endPoi = sugPoiList.get(position);
+                setEndPoi(endPoi);
             }
         });
-//        enAutoTw.setAdapter(arrayAdapter);
-        OnGetSuggestionResultListener listener = new OnGetSuggestionResultListener() {
-            public void onGetSuggestionResult(SuggestionResult res) {
-                if (res == null || res.getAllSuggestions() == null) {
-                    return ;
-                    //未找到相关结果
-                }
-                System.out.println("进入监听器");
-                sugStrList = new ArrayList<>();
-                sugPoiList = new ArrayList<>();
-                datas = new ArrayList<>();
-                for (SuggestionResult.SuggestionInfo info : res.getAllSuggestions()) {
-                    if (info.key != null) {
-                        sugStrList.add(info.key);
-                        sugPoiList.add(info.pt);
-                        datas.add(info.key);
-                    }
-                }
-                enAutoTw.setAdapter(new ArrayAdapter<>(getApplicationContext(),R.layout.support_simple_spinner_dropdown_item, datas));
-
-            }
-        };
-        mSuggestionSearch.setOnGetSuggestionResultListener(listener);
+        mSuggestionSearch.setOnGetSuggestionResultListener(this);
     }
 
     /**
@@ -598,6 +622,7 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
         //4.显示 dialog，接收语音输入
         mDialog.show();
     }
+
     private void initMapGuide(){
         try {
             mNaviHelper = BikeNavigateHelper.getInstance();
@@ -709,6 +734,7 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
 
         });
     }
+
     private void routePlanWithWalkParam() {
         mWNaviHelper.routePlanWithParams(walkParam, new IWRoutePlanListener() {
             @Override

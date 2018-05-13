@@ -42,9 +42,12 @@
     <uses-permission
         android:name="android.permission.WRITE_SETTINGS"
         tools:ignore="ProtectedPermissions" />
-    <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.VIBRATE" />
     <!-- OpenGLES 2.0 -->
-    <uses-feature android:glEsVersion="0x00020000" android:required="true" />
+    <uses-feature
+        android:glEsVersion="0x00020000"
+        android:required="true" />
+
     <application
         android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
@@ -85,7 +88,11 @@
         <activity android:name=".tests.TestActivity" />
         <activity android:name=".navs.FaceLoginActivity" />
         <activity android:name=".WNaviGuideActivity" />
-        <activity android:name=".BNaviGuideActivity"/>
+        <activity android:name=".BNaviGuideActivity" />
+        <activity android:name=".navs.CalWalkActivity"></activity>
+        <activity android:name=".calwalk.activity.HistoryActivity"/>
+        <activity android:name=".calwalk.activity.MainActivity"/>
+        <activity android:name=".calwalk.activity.SetPlanActivity"/>
     </application>
 
 </manifest>
