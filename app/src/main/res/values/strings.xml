@@ -24,7 +24,7 @@
     <string name="history_menu">历史上的今天</string>
 
     <string name="subway_menu">地铁路线图</string>
-    <string name="wallet_menu">收藏夹</string>
+    <string name="weather">天气</string>
     <string name="bus_search_menu">公交线路查询</string>
     <string name="step_menu">计步器</string>
     <string name="setting">设置</string>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.xidian.aria.ariamap.navs.WeatherActivity"
+    android:orientation="vertical">
+    <TextView
+        android:layout_marginTop="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="实时天气"/>
+    <include
+        android:id="@+id/now_weather_lay"
+        layout="@layout/layout_weather_now" />
+    <TextView
+        android:layout_marginTop="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="今日天气"/>
+    <include
+        android:id="@+id/today_weather_lay"
+        layout="@layout/layout_weather_today"/>
+</LinearLayout>

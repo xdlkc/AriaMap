@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+    <TextView
+        android:id="@+id/weather_now_temp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="温度："/>
+    <TextView
+        android:id="@+id/weather_now_wind_direction"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="风向："/>
+    <TextView
+        android:id="@+id/weather_now_wind_strength"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="风力："/>
+    <TextView
+        android:id="@+id/weather_now_humidity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="湿度："/>
+    <TextView
+        android:id="@+id/weather_now_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="更新时间："/>
+</LinearLayout>

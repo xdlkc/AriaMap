@@ -71,6 +71,7 @@ import com.xidian.aria.ariamap.navs.BusSearchActivity;
 import com.xidian.aria.ariamap.navs.FaceLoginActivity;
 import com.xidian.aria.ariamap.navs.HistoryTodayActivity;
 import com.xidian.aria.ariamap.navs.SubwayActivity;
+import com.xidian.aria.ariamap.navs.WeatherActivity;
 import com.xidian.aria.ariamap.parcelables.ParcelableMapData;
 
 import java.util.ArrayList;
@@ -334,8 +335,10 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
                 intent.putExtra("city",city);
                 startActivity(intent);
                 break;
-            case R.id.wallet:
-                Toast.makeText(getApplicationContext(), R.string.wallet_menu, Toast.LENGTH_SHORT).show();
+            case R.id.weather:
+                intent = new Intent(getApplicationContext(), WeatherActivity.class);
+                intent.putExtra("city",city);
+                startActivity(intent);
                 break;
             case R.id.history_today:
                 intent = new Intent(getApplicationContext(), HistoryTodayActivity.class);

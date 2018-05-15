@@ -56,7 +56,6 @@ public class HistoryTodayActivity extends AppCompatActivity {
         String month=calendar.get(Calendar.MONTH)+1+"";
         String day=calendar.get(Calendar.DAY_OF_MONTH)+"";
         String d = "今天是"+month+"月"+day+"日";
-        System.out.println(d);
         dateTv.setText(d);
         ExecutorService es = Executors.newSingleThreadExecutor();
         Future<String > future = es.submit(new HistoryCallable());
