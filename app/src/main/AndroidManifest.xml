@@ -67,7 +67,9 @@
             android:name="com.baidu.location.f"
             android:enabled="true"
             android:process=":remote" />
-
+        <meta-data
+            android:name="IFLYTEK_APPKEY"
+            android:value="'5ae49d2d'" />
         <meta-data
             android:name="com.baidu.lbsapi.API_KEY"
             android:value="TGQwg4RlNkL53IW11ab4A3GzLvNhmFos" />
@@ -82,31 +84,20 @@
         </activity>
         <activity android:name=".navs.BusSearchActivity" />
         <activity android:name=".RouteResultActivity" />
-        <activity
-            android:name=".navs.LoginActivity"
-            android:label="@string/title_activity_login" />
         <activity android:name=".navs.SubwayActivity" />
         <activity android:name=".NearBuildingActivity" />
-        <activity android:name=".dengluActivity" />
-        <activity android:name=".gerenzhongxinActivity" />
-        <activity android:name=".zhuceActivity" />
-        <activity android:name=".chongzhimimaActivity" />
         <activity android:name=".WallentActivity" />
         <activity android:name=".navs.HistoryTodayActivity" />
-        <activity android:name=".tests.TestActivity" />
         <activity android:name=".navs.FaceLoginActivity" />
         <activity android:name=".WNaviGuideActivity" />
         <activity android:name=".BNaviGuideActivity" />
-        <activity android:name=".navs.CalWalkActivity" />
-        <activity android:name=".calwalk.activity.HistoryActivity" />
-        <activity android:name=".calwalk.activity.MainActivity" />
-        <activity android:name=".calwalk.activity.SetPlanActivity" />
-
+        <activity android:name=".calwalk.CalWalkHistoryActivity" />
+        <activity android:name=".calwalk.CalWalkMainActivity" />
+        <activity android:name=".calwalk.CalWalkSetPlanActivity" />
         <service
             android:name=".calwalk.step.service.StepService"
             android:priority="1000">
             <intent-filter>
-
                 <!-- 系统启动完成后会调用 -->
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.intent.action.DATE_CHANGED" />
@@ -122,7 +113,6 @@
             android:priority="1000"
             android:process="cn.bluemobi.dylan.step..pedometer.StepsDetectService">
             <intent-filter>
-
                 <!-- 系统启动完成后会调用 -->
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.intent.action.DATE_CHANGED" />
@@ -133,7 +123,6 @@
                 <action android:name="android.intent.action.ACTION_POWER_DISCONNECTED" />
             </intent-filter>
         </service>
-
         <activity android:name=".navs.WeatherActivity"></activity>
     </application>
 

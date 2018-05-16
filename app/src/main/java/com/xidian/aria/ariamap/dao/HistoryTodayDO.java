@@ -1,4 +1,4 @@
-package com.xidian.aria.ariamap.navs;
+package com.xidian.aria.ariamap.dao;
 
 import android.content.Intent;
 
@@ -12,7 +12,7 @@ import java.util.ArrayList;
 public class HistoryTodayDO {
     private String reason;
     private ArrayList<Detail> result;
-    class Detail{
+    public class Detail{
         public String getDay() {
             return day;
         }

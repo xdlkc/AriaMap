@@ -1,4 +1,4 @@
-package com.xidian.aria.ariamap.calwalk.activity;
+package com.xidian.aria.ariamap.calwalk;
 
 import android.app.TimePickerDialog;
 import android.os.Bundle;
@@ -27,7 +27,7 @@ import java.util.Locale;
  * Created by yuandl on 2016-10-18.
  */
 
-public class SetPlanActivity extends AppCompatActivity implements View.OnClickListener {
+public class CalWalkSetPlanActivity extends AppCompatActivity implements View.OnClickListener {
 
     private SharedPreferencesUtils sp;
 

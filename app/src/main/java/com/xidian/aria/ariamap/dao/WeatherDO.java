@@ -1,4 +1,4 @@
-package com.xidian.aria.ariamap.navs;
+package com.xidian.aria.ariamap.dao;
 
 import java.util.ArrayList;
 
@@ -11,7 +11,7 @@ public class WeatherDO {
     String reason;
     WeatherV2 result;
     String error_code;
-    class WeatherV2{
+    public class WeatherV2{
         WeatherNow sk;
         WeatherToday today;
         ArrayList<WeatherFuture> future;
@@ -40,7 +40,7 @@ public class WeatherDO {
             this.future = future;
         }
     }
-    class WeatherNow{
+    public class WeatherNow{
         String temp;
         String wind_direction;
         String wind_strength;
@@ -87,7 +87,7 @@ public class WeatherDO {
             this.time = time;
         }
     }
-    class WeatherToday{
+    public class WeatherToday{
         String city;
         String date_y;
         String week;

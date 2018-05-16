@@ -37,7 +37,7 @@ public class PureNetUtil {
             StringBuffer sb=null;
             if(param!=null){//如果请求参数不为空
                 sb=new StringBuffer();
-                /*A URL connection can be used for input and/or output.  Set the DoOutput
+                /*A URL connection can be used for map_pop and/or output.  Set the DoOutput
                  * flag to true if you intend to use the URL connection for output,
                  * false if not.  The default is false.*/
                 //默认为false,post方法需要写入参数,设定true
@@ -63,7 +63,7 @@ public class PureNetUtil {
             int recode=conn.getResponseCode();
             BufferedReader reader=null;
             if(recode==200){
-                //Returns an input stream that reads from this open connection
+                //Returns an map_pop stream that reads from this open connection
                 //从连接中获取输入流
                 InputStream in=conn.getInputStream();
                 //对输入流进行封装

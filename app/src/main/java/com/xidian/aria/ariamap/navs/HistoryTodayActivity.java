@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.xidian.aria.ariamap.R;
+import com.xidian.aria.ariamap.dao.HistoryTodayDO;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;

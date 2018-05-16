@@ -1,4 +1,4 @@
-package com.xidian.aria.ariamap.calwalk.activity;
+package com.xidian.aria.ariamap.calwalk;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -26,7 +26,7 @@ import java.util.List;
  * Created by yuandl on 2016-10-18.
  */
 
-public class HistoryActivity extends AppCompatActivity {
+public class CalWalkHistoryActivity extends AppCompatActivity {
     private LinearLayout layout_titlebar;
     private ImageView iv_left;
     private ImageView iv_right;
@@ -60,7 +60,7 @@ public class HistoryActivity extends AppCompatActivity {
         }
         List<StepData> stepDatas =DbUtils.getQueryAll(StepData.class);
         Log.d("","stepDatas="+stepDatas);
-        lv.setAdapter(new CommonAdapter<StepData>(this,stepDatas,R.layout.item) {
+        lv.setAdapter(new CommonAdapter<StepData>(this,stepDatas,R.layout.walk_step_item) {
             @Override
             protected void convertView(View item, StepData stepData) {
                 TextView tv_date= CommonViewHolder.get(item,R.id.tv_date);

@@ -21,7 +21,7 @@ import android.util.Log;
 
 
 import com.xidian.aria.ariamap.R;
-import com.xidian.aria.ariamap.calwalk.activity.MainActivity;
+import com.xidian.aria.ariamap.calwalk.CalWalkMainActivity;
 import com.xidian.aria.ariamap.calwalk.step.UpdateUiCallBack;
 import com.xidian.aria.ariamap.calwalk.step.accelerometer.StepCount;
 import com.xidian.aria.ariamap.calwalk.step.accelerometer.StepValuePassListener;
@@ -269,7 +269,7 @@ public class StepService extends Service implements SensorEventListener {
      */
     private void updateNotification() {
         //设置点击跳转
-        Intent hangIntent = new Intent(this, MainActivity.class);
+        Intent hangIntent = new Intent(this, CalWalkMainActivity.class);
         PendingIntent hangPendingIntent = PendingIntent.getActivity(this, 0, hangIntent, PendingIntent.FLAG_CANCEL_CURRENT);
 
         Notification notification = mBuilder.setContentTitle(getResources().getString(R.string.app_name))
@@ -313,7 +313,7 @@ public class StepService extends Service implements SensorEventListener {
     private void remindNotify() {
 
         //设置点击跳转
-        Intent hangIntent = new Intent(this, MainActivity.class);
+        Intent hangIntent = new Intent(this, CalWalkMainActivity.class);
         PendingIntent hangPendingIntent = PendingIntent.getActivity(this, 0, hangIntent, PendingIntent.FLAG_CANCEL_CURRENT);
 
         String plan = this.getSharedPreferences("share_date", Context.MODE_MULTI_PROCESS).getString("planWalk_QTY", "7000");

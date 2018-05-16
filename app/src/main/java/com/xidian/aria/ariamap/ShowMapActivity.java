@@ -21,7 +21,6 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -66,7 +65,8 @@ import com.iflytek.cloud.SpeechError;
 import com.iflytek.cloud.SpeechUtility;
 import com.iflytek.cloud.ui.RecognizerDialog;
 import com.iflytek.cloud.ui.RecognizerDialogListener;
-import com.xidian.aria.ariamap.calwalk.activity.MainActivity;
+import com.xidian.aria.ariamap.calwalk.CalWalkMainActivity;
+import com.xidian.aria.ariamap.face.OnlineFaceDemo;
 import com.xidian.aria.ariamap.navs.BusSearchActivity;
 import com.xidian.aria.ariamap.navs.FaceLoginActivity;
 import com.xidian.aria.ariamap.navs.HistoryTodayActivity;
@@ -213,7 +213,7 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
     @Override
     public boolean onMapPoiClick(MapPoi poi) {
         mBaiduMap.hideInfoWindow();
-        RelativeLayout relativeLayout = (RelativeLayout) LayoutInflater.from(getApplicationContext()).inflate(R.layout.input,null);
+        RelativeLayout relativeLayout = (RelativeLayout) LayoutInflater.from(getApplicationContext()).inflate(R.layout.map_pop,null);
         TextView textView = relativeLayout.findViewById(R.id.poi_name_tv);
         textView.setText(poi.getName());
 
@@ -322,7 +322,7 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
         Intent intent;
         switch (item.getItemId()){
             case R.id.face_login:
-                intent = new Intent(getApplicationContext(),FaceLoginActivity.class);
+                intent = new Intent(getApplicationContext(),OnlineFaceDemo.class);
                 startActivity(intent);
                 break;
             case R.id.bus_search_item:
@@ -345,7 +345,7 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
                 startActivity(intent);
                 break;
             case R.id.step_item:
-                intent = new Intent(getApplicationContext(), MainActivity.class);
+                intent = new Intent(getApplicationContext(), CalWalkMainActivity.class);
                 startActivity(intent);
                 break;
             default:
@@ -471,26 +471,7 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
      */
     private void initComponents(){
         SpeechUtility.createUtility(this, SpeechConstant.APPID +"=5ae49d2d");
-        //登录
-        View navView = navigationView.inflateHeaderView(R.layout.left_head_layout);
-        ImageView user_pic = (ImageView) navView.findViewById(R.id.land);
-        ImageButton imageButton = navView.findViewById(R.id.nav_set_btn);
-        imageButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-//                Intent intent = new Intent(getApplicationContext(),SettingsActivity.class);
-//                startActivity(intent);
-            }
-        });
-        user_pic.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(),dengluActivity.class);
-                startActivity(intent);
-            }
-        });
         navigationView.setNavigationItemSelectedListener(this);
-
         voiceBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

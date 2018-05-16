@@ -1,4 +1,4 @@
-package com.xidian.aria.ariamap.calwalk.activity;
+package com.xidian.aria.ariamap.calwalk;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -21,8 +21,8 @@ import com.xidian.aria.ariamap.calwalk.view.StepArcView;
 /**
  * 记步主页
  */
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
-    private static final String TAG = MainActivity.class.getSimpleName();
+public class CalWalkMainActivity extends AppCompatActivity implements View.OnClickListener {
+    private static final String TAG = CalWalkMainActivity.class.getSimpleName();
     private TextView tv_data;
     private StepArcView cc;
     private TextView tv_set;
@@ -118,10 +118,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.tv_set:
-                startActivity(new Intent(this, SetPlanActivity.class));
+                startActivity(new Intent(this, CalWalkSetPlanActivity.class));
                 break;
             case R.id.tv_data:
-                startActivity(new Intent(this, HistoryActivity.class));
+                startActivity(new Intent(this, CalWalkHistoryActivity.class));
                 break;
         }
     }
