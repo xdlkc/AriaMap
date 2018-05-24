@@ -10,8 +10,10 @@ import com.xidian.aria.ariamap.R;
 import com.xidian.aria.ariamap.dao.WeatherDO;
 
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 public class WeatherActivity extends AppCompatActivity {
     String city;
@@ -61,11 +63,12 @@ public class WeatherActivity extends AppCompatActivity {
         Intent intent = getIntent();
         city = intent.getStringExtra("city");
         ExecutorService service = Executors.newSingleThreadExecutor();
-//        Future<String > future = service.submit(new WeatherCallable());
-        //            String w=future.get();
-        String w = "{\"resultcode\":\"200\",\"reason\":\"successed!\",\"result\":{\"sk\":{\"temp\":\"24\",\"wind_direction\":\"北风\",\"wind_strength\":\"1级\",\"humidity\":\"71%\",\"time\":\"00:38\"},\"today\":{\"temperature\":\"21℃~35℃\",\"weather\":\"晴转阴\",\"weather_id\":{\"fa\":\"00\",\"fb\":\"02\"},\"wind\":\"西南风微风\",\"week\":\"星期三\",\"city\":\"西安\",\"date_y\":\"2018年05月16日\",\"dressing_index\":\"炎热\",\"dressing_advice\":\"天气炎热，建议着短衫、短裙、短裤、薄型T恤衫等清凉夏季服装。\",\"uv_index\":\"强\",\"comfort_index\":\"\",\"wash_index\":\"较适宜\",\"travel_index\":\"较适宜\",\"exercise_index\":\"较适宜\",\"drying_index\":\"\"},\"future\":[{\"temperature\":\"21℃~35℃\",\"weather\":\"晴转阴\",\"weather_id\":{\"fa\":\"00\",\"fb\":\"02\"},\"wind\":\"西南风微风\",\"week\":\"星期三\",\"date\":\"20180516\"},{\"temperature\":\"21℃~34℃\",\"weather\":\"阴转多云\",\"weather_id\":{\"fa\":\"02\",\"fb\":\"01\"},\"wind\":\"西风3-5级\",\"week\":\"星期四\",\"date\":\"20180517\"},{\"temperature\":\"18℃~30℃\",\"weather\":\"小雨\",\"weather_id\":{\"fa\":\"07\",\"fb\":\"07\"},\"wind\":\"东北风3-5级\",\"week\":\"星期五\",\"date\":\"20180518\"},{\"temperature\":\"16℃~26℃\",\"weather\":\"小雨转阴\",\"weather_id\":{\"fa\":\"07\",\"fb\":\"02\"},\"wind\":\"东北风微风\",\"week\":\"星期六\",\"date\":\"20180519\"},{\"temperature\":\"18℃~27℃\",\"weather\":\"阴转多云\",\"weather_id\":{\"fa\":\"02\",\"fb\":\"01\"},\"wind\":\"东北风微风\",\"week\":\"星期日\",\"date\":\"20180520\"},{\"temperature\":\"16℃~26℃\",\"weather\":\"小雨转阴\",\"weather_id\":{\"fa\":\"07\",\"fb\":\"02\"},\"wind\":\"东北风微风\",\"week\":\"星期一\",\"date\":\"20180521\"},{\"temperature\":\"18℃~30℃\",\"weather\":\"小雨\",\"weather_id\":{\"fa\":\"07\",\"fb\":\"07\"},\"wind\":\"东北风3-5级\",\"week\":\"星期二\",\"date\":\"20180522\"}]},\"error_code\":0}";
-        Gson gson = new Gson();
-        WeatherDO weather = gson.fromJson(w,WeatherDO.class);
+        Future<String > future = service.submit(new WeatherCallable());
+        String w= null;
+        try {
+            w = future.get();
+            Gson gson = new Gson();
+            WeatherDO weather = gson.fromJson(w,WeatherDO.class);
             WeatherDO.WeatherV2 result = weather.getResult();
             WeatherDO.WeatherNow sk = result.getSk();
             WeatherDO.WeatherToday today = result.getToday();
@@ -74,7 +77,6 @@ public class WeatherActivity extends AppCompatActivity {
             windStrengthTv.setText("风力："+sk.getWind_strength());
             humidityTv.setText("湿度："+sk.getHumidity());
             timeTv.setText("更新时间："+sk.getTime());
-
             cityTv.setText("城市："+today.getCity());
             date_yTv.setText("日期："+today.getDate_y());
             temperatureTv.setText("温度："+today.getTemperature());
@@ -88,6 +90,11 @@ public class WeatherActivity extends AppCompatActivity {
             travel_indexTv.setText("旅游指数："+today.getTravel_index());
             exercise_indexTv.setText("晨炼指数："+today.getExercise_index());
             drying_indexTv.setText("干燥指数："+today.getDrying_index());
+
+
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
     }
     class WeatherCallable implements Callable<String >{
         private String result;

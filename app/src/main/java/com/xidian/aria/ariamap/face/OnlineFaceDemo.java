@@ -13,6 +13,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.v4.content.FileProvider;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -74,7 +75,7 @@ public class OnlineFaceDemo extends Activity implements View.OnClickListener {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.requestWindowFeature(Window.FEATURE_NO_TITLE);
+//        this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.online_facedemo);
         findViewById(R.id.online_pick).setOnClickListener(OnlineFaceDemo.this);
         findViewById(R.id.online_reg).setOnClickListener(OnlineFaceDemo.this);
@@ -83,32 +84,29 @@ public class OnlineFaceDemo extends Activity implements View.OnClickListener {
         findViewById(R.id.btn_modle_delete).setOnClickListener(OnlineFaceDemo.this);
         online_authid = (EditText) findViewById(R.id.online_authid);
         mToast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
+        mProDialog = new ProgressDialog(this);
+        mProDialog.setCancelable(true);
+        mProDialog.setTitle("请稍后");
+        mProDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
 
-//        mProDialog = new ProgressDialog(this);
-//        mProDialog.setCancelable(true);
-//        mProDialog.setTitle("请稍后");
-//
-//        mProDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-//
-//            @Override
-//            public void onCancel(DialogInterface dialog) {
-//                // cancel进度框时,取消正在进行的操作
-//                if (null != mIdVerifier) {
-//                    mIdVerifier.cancel();
-//                }
-//            }
-//        });
-//
-//        mIdVerifier = IdentityVerifier.createVerifier(OnlineFaceDemo.this, new InitListener() {
-//            @Override
-//            public void onInit(int errorCode) {
-//                if (ErrorCode.SUCCESS == errorCode) {
-//                    showTip("引擎初始化成功");
-//                } else {
-//                    showTip("引擎初始化失败，错误码：" + errorCode);
-//                }
-//            }
-//        });
+            @Override
+            public void onCancel(DialogInterface dialog) {
+                // cancel进度框时,取消正在进行的操作
+                if (null != mIdVerifier) {
+                    mIdVerifier.cancel();
+                }
+            }
+        });
+        mIdVerifier = IdentityVerifier.createVerifier(OnlineFaceDemo.this, new InitListener() {
+            @Override
+            public void onInit(int errorCode) {
+                if (ErrorCode.SUCCESS == errorCode) {
+                    showTip("引擎初始化成功");
+                } else {
+                    showTip("引擎初始化失败，错误码：" + errorCode);
+                }
+            }
+        });
     }
 
     private void register(JSONObject obj) throws JSONException {
@@ -292,7 +290,6 @@ public class OnlineFaceDemo extends Activity implements View.OnClickListener {
 
     @Override
     public void onClick(View view) {
-        int ret = ErrorCode.SUCCESS;
         mAuthid = online_authid.getText().toString();
         if(TextUtils.isEmpty(mAuthid)) {
             showTip("请输入用户ID");
@@ -396,14 +393,11 @@ public class OnlineFaceDemo extends Activity implements View.OnClickListener {
                 break;
         }//end of switch
 
-        if( ErrorCode.SUCCESS != ret ){
-            mProDialog.dismiss();
-            showTip( "出现错误："+ret );
-        }
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Log.d(TAG, "onActivityResult: ");
         if (resultCode != RESULT_OK) {
             return;
         }
