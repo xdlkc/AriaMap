@@ -23,9 +23,7 @@
     <!-- 访问网络，网络定位需要上网 -->
     <uses-permission android:name="android.permission.INTERNET" />
     <!-- SD卡读取权限，用户写入离线定位数据 -->
-    <uses-permission xmlns:tools="http://schemas.android.com/tools"
-        android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS"
-        tools:ignore="ProtectedPermissions" />
+    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
     <!-- 用于读取手机当前的状态 -->
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.READ_PROFILE" />
@@ -39,9 +37,7 @@
     <!-- 外存储写权限，构建语法需要用到此权限 -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <!-- 配置权限，用来记录应用配置信息 -->
-    <uses-permission
-        android:name="android.permission.WRITE_SETTINGS"
-        tools:ignore="ProtectedPermissions" />
+    <uses-permission android:name="android.permission.WRITE_SETTINGS"/>
     <uses-permission android:name="android.permission.VIBRATE" />
 
     <uses-feature android:name="android.hardware.sensor.accelerometer" />
@@ -63,33 +59,20 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
-        <provider
-            android:name="android.support.v4.content.FileProvider"
-            android:authorities="${applicationId}.fileprovider"
-            android:exported="false"
-            android:grantUriPermissions="true">
-            <meta-data
-                android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/provider_paths" />
-        </provider>
         <service
             android:name="com.baidu.location.f"
             android:enabled="true"
             android:process=":remote" />
         <meta-data
             android:name="IFLYTEK_APPKEY"
-            android:value="'5ae49d2d'" />
+            android:value="5ae49d2d" />
         <meta-data
             android:name="com.baidu.lbsapi.API_KEY"
             android:value="TGQwg4RlNkL53IW11ab4A3GzLvNhmFos" />
         <!-- android:value="HsM7LUKpgk4vgOewGYvHqgB5LPp8ciUu" /> -->
         <!-- android:value="d521WulfOyVh5H5TuNMqjqvxnXgWiSKH" /> -->
         <activity android:name=".ShowMapActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity android:name=".navs.BusSearchActivity" />
         <activity android:name=".RouteResultActivity" />
@@ -98,8 +81,8 @@
         <activity android:name=".WallentActivity" />
         <activity android:name=".navs.HistoryTodayActivity" />
         <activity android:name=".navs.FaceLoginActivity" />
-        <activity android:name=".WNaviGuideActivity" />
-        <activity android:name=".BNaviGuideActivity" />
+        <activity android:name=".guide.WNaviGuideActivity" />
+        <activity android:name=".guide.BNaviGuideActivity" />
         <activity android:name=".calwalk.CalWalkHistoryActivity" />
         <activity android:name=".calwalk.CalWalkMainActivity" />
         <activity android:name=".calwalk.CalWalkSetPlanActivity" />
@@ -134,7 +117,15 @@
         </service>
 
         <activity android:name=".navs.WeatherActivity" />
-        <activity android:name=".face.OnlineFaceDemo"/>
+        <activity android:name=".face.OnlineFaceDemo"
+            android:configChanges="mcc|mnc|locale|touchscreen|keyboard|keyboardHidden|navigation|orientation|screenLayout|fontScale"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

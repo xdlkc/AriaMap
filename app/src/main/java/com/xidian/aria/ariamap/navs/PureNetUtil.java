@@ -10,9 +10,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Map;
 
-/**
- * Created by lkc on 2018/5/15.
- */
 
 public class PureNetUtil {
     /**

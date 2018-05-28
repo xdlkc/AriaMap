@@ -14,7 +14,6 @@ import com.xidian.aria.ariamap.R;
 
 
 /**
- * Created by DylanAndroid on 2016/5/26.
  * 显示步数的圆弧
  */
 public class StepArcView extends View {
@@ -118,6 +117,7 @@ public class StepArcView extends View {
      * 2.绘制当前步数的红色圆弧
      */
     private void drawArcRed(Canvas canvas, RectF rectF) {
+        // 画笔工具
         Paint paintCurrent = new Paint();
         paintCurrent.setStrokeJoin(Paint.Join.ROUND);
         paintCurrent.setStrokeCap(Paint.Cap.ROUND);//圆角弧度

@@ -1,6 +1,3 @@
-/*
- * Copyright (C) 2016 Baidu, Inc. All Rights Reserved.
- */
 package com.xidian.aria.ariamap.overlayutil;
 
 import android.graphics.Color;

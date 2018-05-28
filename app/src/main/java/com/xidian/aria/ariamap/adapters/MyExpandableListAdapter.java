@@ -7,9 +7,6 @@ import android.widget.BaseExpandableListAdapter;
 
 import java.util.List;
 
-/**
- * Created by lkc on 2018/5/15.
- */
 
 public abstract class MyExpandableListAdapter<P, C> extends BaseExpandableListAdapter {
     protected Context mContext;

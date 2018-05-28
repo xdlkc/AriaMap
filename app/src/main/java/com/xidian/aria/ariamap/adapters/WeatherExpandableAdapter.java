@@ -4,9 +4,6 @@ import android.content.Context;
 
 import java.util.List;
 
-/**
- * Created by lkc on 2018/5/16.
- */
 
 public class WeatherExpandableAdapter extends MyExpandableListAdapter<String ,String >{
     public WeatherExpandableAdapter(Context mContext, List<String> mParentList, List<List<String>> mChildList, int mParentLayout, int mChildLayout) {

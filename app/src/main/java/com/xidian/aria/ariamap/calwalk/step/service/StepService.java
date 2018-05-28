@@ -401,16 +401,6 @@ public class StepService extends Service implements SensorEventListener {
         }
     }
 
-    /**
-     * 添加传感器监听
-     * 1. TYPE_STEP_COUNTER API的解释说返回从开机被激活后统计的步数，当重启手机后该数据归零，
-     * 该传感器是一个硬件传感器所以它是低功耗的。
-     * 为了能持续的计步，请不要注销事件，就算手机处于休眠状态它依然会计步。
-     * 当激活的时候依然会上报步数。该sensor适合在长时间的计步需求。
-     * 2.TYPE_STEP_DETECTOR翻译过来就是走路检测，
-     * API文档也确实是这样说的，该sensor只用来监监测走步，每次返回数字1.0。
-     * 如果需要长事件的计步请使用TYPE_STEP_COUNTER。
-     */
     private void addCountStepListener() {
         Sensor countSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER);
         Sensor detectorSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR);

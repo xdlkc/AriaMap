@@ -23,10 +23,6 @@ import java.util.Date;
 import java.util.Locale;
 
 
-/**
- * Created by yuandl on 2016-10-18.
- */
-
 public class CalWalkSetPlanActivity extends AppCompatActivity implements View.OnClickListener {
 
     private SharedPreferencesUtils sp;

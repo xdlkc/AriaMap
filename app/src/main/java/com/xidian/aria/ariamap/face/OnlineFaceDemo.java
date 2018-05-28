@@ -13,7 +13,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.v4.content.FileProvider;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -37,14 +36,6 @@ import org.json.JSONObject;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 
-/**
- *
- * 此demo意在为提供在线人脸识别相关api调用方式，1:1 识别
- *
- * @author hjyu
- * @date 2017/9/28.
- * @see <a href="http://www.xfyun.cn">讯飞开放平台</a>
- */
 
 public class OnlineFaceDemo extends Activity implements View.OnClickListener {
     private final String TAG = "OnlineFaceDemo";
@@ -72,10 +63,11 @@ public class OnlineFaceDemo extends Activity implements View.OnClickListener {
     // 删除模型
     private final static int MODEL_DEL = 1;
 
+    @SuppressLint("ShowToast")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        this.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.online_facedemo);
         findViewById(R.id.online_pick).setOnClickListener(OnlineFaceDemo.this);
         findViewById(R.id.online_reg).setOnClickListener(OnlineFaceDemo.this);
@@ -84,9 +76,11 @@ public class OnlineFaceDemo extends Activity implements View.OnClickListener {
         findViewById(R.id.btn_modle_delete).setOnClickListener(OnlineFaceDemo.this);
         online_authid = (EditText) findViewById(R.id.online_authid);
         mToast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
+
         mProDialog = new ProgressDialog(this);
         mProDialog.setCancelable(true);
         mProDialog.setTitle("请稍后");
+
         mProDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
 
             @Override
@@ -97,6 +91,7 @@ public class OnlineFaceDemo extends Activity implements View.OnClickListener {
                 }
             }
         });
+
         mIdVerifier = IdentityVerifier.createVerifier(OnlineFaceDemo.this, new InitListener() {
             @Override
             public void onInit(int errorCode) {
@@ -290,6 +285,7 @@ public class OnlineFaceDemo extends Activity implements View.OnClickListener {
 
     @Override
     public void onClick(View view) {
+        int ret = ErrorCode.SUCCESS;
         mAuthid = online_authid.getText().toString();
         if(TextUtils.isEmpty(mAuthid)) {
             showTip("请输入用户ID");
@@ -378,11 +374,10 @@ public class OnlineFaceDemo extends Activity implements View.OnClickListener {
                 mPictureFile = new File(Environment.getExternalStorageDirectory(),
                         "picture" + System.currentTimeMillis()/1000 + ".jpg");
                 // 启动拍照,并保存到临时文件
-                Intent mIntent = new Intent();
-                mIntent.setAction(MediaStore.ACTION_IMAGE_CAPTURE);
-                mIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(mPictureFile));
+                Intent mIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+//                mIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(mPictureFile));
                 mIntent.putExtra(MediaStore.Images.Media.ORIENTATION, 0);
-                startActivityForResult(mIntent, REQUEST_CAMERA_IMAGE);
+                startActivityForResult(mIntent, 2);
                 break;
             case R.id.btn_modle_delete:
                 // 人脸模型删除
@@ -393,11 +388,14 @@ public class OnlineFaceDemo extends Activity implements View.OnClickListener {
                 break;
         }//end of switch
 
+        if( ErrorCode.SUCCESS != ret ){
+            mProDialog.dismiss();
+            showTip( "出现错误："+ret );
+        }
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.d(TAG, "onActivityResult: ");
         if (resultCode != RESULT_OK) {
             return;
         }
@@ -418,17 +416,19 @@ public class OnlineFaceDemo extends Activity implements View.OnClickListener {
                 cursor.close();
             }
             // 跳转到图片裁剪页面
-            FaceUtil.cropPicture(this, Uri.fromFile(new File(fileSrc)));
+            FaceUtil.cropPicture(this,Uri.fromFile(new File(fileSrc)));
         } else if (requestCode == REQUEST_CAMERA_IMAGE) {
             if (null == mPictureFile) {
                 showTip("拍照失败，请重试");
                 return;
             }
-
+//
             fileSrc = mPictureFile.getAbsolutePath();
+            System.out.println(fileSrc);
             updateGallery(fileSrc);
-            // 跳转到图片裁剪页面
-            FaceUtil.cropPicture(this, Uri.fromFile(new File(fileSrc)));
+            Uri uri = Uri.parse("file://"+ fileSrc);
+//            // 跳转到图片裁剪页面
+            FaceUtil.cropPicture(this,uri);
         } else if (requestCode == FaceUtil.REQUEST_CROP_IMAGE) {
             // 获取返回数据
             Bitmap bmp = data.getParcelableExtra("data");
@@ -484,6 +484,7 @@ public class OnlineFaceDemo extends Activity implements View.OnClickListener {
     }
 
     private void updateGallery(String filename) {
+        // 将图片扫描至媒体库
         MediaScannerConnection.scanFile(this, new String[] {filename}, null,
                 new MediaScannerConnection.OnScanCompletedListener() {
 

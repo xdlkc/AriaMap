@@ -22,10 +22,6 @@ import com.xidian.aria.ariamap.calwalk.step.utils.DbUtils;
 import java.util.List;
 
 
-/**
- * Created by yuandl on 2016-10-18.
- */
-
 public class CalWalkHistoryActivity extends AppCompatActivity {
     private LinearLayout layout_titlebar;
     private ImageView iv_left;

@@ -1,8 +1,5 @@
 package com.xidian.aria.ariamap.enums;
 
-/**
- * Created by lkc on 18-3-21.
- */
 
 public enum TrafficWay {
     WALK("walk",1),DRIVING("driving",2),BUS("bus",3);

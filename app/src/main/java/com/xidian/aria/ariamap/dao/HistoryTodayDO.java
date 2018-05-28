@@ -5,7 +5,6 @@ import android.content.Intent;
 import java.util.ArrayList;
 
 /**
- * Created by lkc on 2018/5/13.
  * 存储历史上的今天接口返回数据
  */
 

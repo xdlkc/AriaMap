@@ -2,10 +2,6 @@ package com.xidian.aria.ariamap.dao;
 
 import java.util.ArrayList;
 
-/**
- * Created by lkc on 2018/5/15.
- */
-
 public class WeatherDO {
     String resultCode;
     String reason;

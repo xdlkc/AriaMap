@@ -5,9 +5,7 @@ import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 
-/**
- * Created by lkc on 2018/5/16.
- */
+
 
 public class ViewHolder {
     private View convertView;

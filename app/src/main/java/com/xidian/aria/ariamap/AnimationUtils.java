@@ -4,10 +4,6 @@ import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 
-/**
- * Created by lkc on 2018/5/9.
- */
-
 public class AnimationUtils {
     public enum AnimationState{
         STATE_SHOW,

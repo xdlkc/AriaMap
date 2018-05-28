@@ -4,6 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.xidian.aria.ariamap.WNaviGuideActivity">
+    tools:context="com.xidian.aria.ariamap.guide.WNaviGuideActivity">
 
 </android.support.constraint.ConstraintLayout>

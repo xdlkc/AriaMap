@@ -1,7 +1,4 @@
-/*
- * Copyright (C) 2017 Baidu, Inc. All Rights Reserved.
- */
-package com.xidian.aria.ariamap;
+package com.xidian.aria.ariamap.guide;
 
 import android.app.Activity;
 import android.content.pm.PackageManager;

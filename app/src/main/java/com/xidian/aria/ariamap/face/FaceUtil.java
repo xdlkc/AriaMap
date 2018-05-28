@@ -33,6 +33,7 @@ public class FaceUtil {
 	 * @param uri 图片的Uri
 	 */
 	public static void cropPicture(Activity activity, Uri uri) {
+
 		Intent innerIntent = new Intent("com.android.camera.action.CROP");
 		innerIntent.setDataAndType(uri, "image/*");
 		innerIntent.putExtra("crop", "true");// 才能出剪辑的小方框，不然没有剪辑功能，只能选取图片
@@ -45,7 +46,7 @@ public class FaceUtil {
 		innerIntent.putExtra("scale", true);
 		innerIntent.putExtra("scaleUpIfNeeded", true);
 		File imageFile = new File(getImagePath(activity.getApplicationContext()));
-		innerIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(imageFile));
+		innerIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.parse("file://"+ imageFile.getAbsolutePath()));
 		innerIntent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());
 		activity.startActivityForResult(innerIntent, REQUEST_CROP_IMAGE);
 	}

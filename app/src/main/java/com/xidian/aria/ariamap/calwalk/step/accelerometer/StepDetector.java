@@ -1,9 +1,5 @@
 package com.xidian.aria.ariamap.calwalk.step.accelerometer;
 
-/**
- * Created by dylan on 16/9/27.
- */
-
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
