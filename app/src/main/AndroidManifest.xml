@@ -78,7 +78,6 @@
         <activity android:name=".RouteResultActivity" />
         <activity android:name=".navs.SubwayActivity" />
         <activity android:name=".NearBuildingActivity" />
-        <activity android:name=".WallentActivity" />
         <activity android:name=".navs.HistoryTodayActivity" />
         <activity android:name=".navs.FaceLoginActivity" />
         <activity android:name=".guide.WNaviGuideActivity" />
