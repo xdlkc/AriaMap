@@ -52,7 +52,7 @@ public class CalWalkHistoryActivity extends AppCompatActivity {
     private void initData() {
         setEmptyView(lv);
         if(DbUtils.getLiteOrm()==null){
-            DbUtils.createDb(this, "jingzhi");
+            DbUtils.createDb(this, "calwalk");
         }
         List<StepData> stepDatas =DbUtils.getQueryAll(StepData.class);
         Log.d("","stepDatas="+stepDatas);
