@@ -1,8 +1,6 @@
 package com.xidian.aria.ariamap.face;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -12,9 +10,8 @@ import android.graphics.Paint.Style;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.media.ExifInterface;
-import android.net.Uri;
 import android.os.Environment;
-import android.provider.MediaStore;
+
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileNotFoundException;
@@ -26,30 +23,6 @@ public class FaceUtil {
 	public final static int REQUEST_PICTURE_CHOOSE = 1;
 	public final static int  REQUEST_CAMERA_IMAGE = 2;
 	public final static int REQUEST_CROP_IMAGE = 3;
-	
-	/***
-	 * 裁剪图片
-	 * @param activity Activity
-	 * @param uri 图片的Uri
-	 */
-	public static void cropPicture(Activity activity, Uri uri) {
-
-		Intent innerIntent = new Intent("com.android.camera.action.CROP");
-		innerIntent.setDataAndType(uri, "image/*");
-		innerIntent.putExtra("crop", "true");// 才能出剪辑的小方框，不然没有剪辑功能，只能选取图片
-		innerIntent.putExtra("aspectX", 1); // 放大缩小比例的X
-		innerIntent.putExtra("aspectY", 1);// 放大缩小比例的X   这里的比例为：   1:1
-		innerIntent.putExtra("outputX", 320);  //这个是限制输出图片大小
-		innerIntent.putExtra("outputY", 320); 
-		innerIntent.putExtra("return-data", true);
-		// 切图大小不足输出，无黑框
-		innerIntent.putExtra("scale", true);
-		innerIntent.putExtra("scaleUpIfNeeded", true);
-		File imageFile = new File(getImagePath(activity.getApplicationContext()));
-		innerIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.parse("file://"+ imageFile.getAbsolutePath()));
-		innerIntent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString());
-		activity.startActivityForResult(innerIntent, REQUEST_CROP_IMAGE);
-	}
 	
 	/**
 	 * 保存裁剪的图片的路径
@@ -245,25 +218,5 @@ public class FaceUtil {
 	        e.printStackTrace();
 	        return 1;
 	    }
-	}
-	
-	/**
-	 * 保存Bitmap至本地
-	 * @param
-	 */
-	public static void saveBitmapToFile(Context context, Bitmap bmp){
-		String file_path = getImagePath(context);
-		File file = new File(file_path);
-		FileOutputStream fOut;
-		try {
-			fOut = new FileOutputStream(file);
-			bmp.compress(Bitmap.CompressFormat.JPEG, 85, fOut);
-			fOut.flush();
-			fOut.close();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
 }

@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
+        android:id="@+id/user_tv"
+        android:icon="@drawable/user"
+        android:title="暂无用户"/>
+    <item
         android:id="@+id/face_login"
         android:icon="@drawable/ic_face"
         android:title="@string/face_login"/>

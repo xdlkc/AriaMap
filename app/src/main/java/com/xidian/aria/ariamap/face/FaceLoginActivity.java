@@ -13,6 +13,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.v4.content.FileProvider;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -29,6 +30,7 @@ import com.iflytek.cloud.InitListener;
 import com.iflytek.cloud.SpeechConstant;
 import com.iflytek.cloud.SpeechError;
 import com.xidian.aria.ariamap.R;
+import com.xidian.aria.ariamap.ShowMapActivity;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -37,8 +39,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 
 
-public class OnlineFaceDemo extends Activity implements View.OnClickListener {
-    private final String TAG = "OnlineFaceDemo";
+public class FaceLoginActivity extends Activity implements View.OnClickListener {
+    private final String TAG = "FaceLoginActivity";
     private final int REQUEST_PICTURE_CHOOSE = 1;
     private final int REQUEST_CAMERA_IMAGE = 2;
 
@@ -68,12 +70,12 @@ public class OnlineFaceDemo extends Activity implements View.OnClickListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        setContentView(R.layout.online_facedemo);
-        findViewById(R.id.online_pick).setOnClickListener(OnlineFaceDemo.this);
-        findViewById(R.id.online_reg).setOnClickListener(OnlineFaceDemo.this);
-        findViewById(R.id.online_verify).setOnClickListener(OnlineFaceDemo.this);
-        findViewById(R.id.online_camera).setOnClickListener(OnlineFaceDemo.this);
-        findViewById(R.id.btn_modle_delete).setOnClickListener(OnlineFaceDemo.this);
+        setContentView(R.layout.face_login);
+        findViewById(R.id.online_pick).setOnClickListener(FaceLoginActivity.this);
+        findViewById(R.id.online_reg).setOnClickListener(FaceLoginActivity.this);
+        findViewById(R.id.online_verify).setOnClickListener(FaceLoginActivity.this);
+        findViewById(R.id.online_camera).setOnClickListener(FaceLoginActivity.this);
+        findViewById(R.id.btn_modle_delete).setOnClickListener(FaceLoginActivity.this);
         online_authid = (EditText) findViewById(R.id.online_authid);
         mToast = Toast.makeText(this, "", Toast.LENGTH_SHORT);
 
@@ -92,7 +94,7 @@ public class OnlineFaceDemo extends Activity implements View.OnClickListener {
             }
         });
 
-        mIdVerifier = IdentityVerifier.createVerifier(OnlineFaceDemo.this, new InitListener() {
+        mIdVerifier = IdentityVerifier.createVerifier(FaceLoginActivity.this, new InitListener() {
             @Override
             public void onInit(int errorCode) {
                 if (ErrorCode.SUCCESS == errorCode) {
@@ -103,39 +105,6 @@ public class OnlineFaceDemo extends Activity implements View.OnClickListener {
             }
         });
     }
-
-    private void register(JSONObject obj) throws JSONException {
-        int ret = obj.getInt("ret");
-        if (ret != 0) {
-            showTip("注册失败");
-            return;
-        }
-        if ("success".equals(obj.get("rst"))) {
-            showTip("注册成功");
-        } else {
-            showTip("注册失败");
-        }
-    }
-
-    private void verify(JSONObject obj) throws JSONException {
-        int ret = obj.getInt("ret");
-        if (ret != 0) {
-            showTip("验证失败");
-            return;
-        }
-        if ("success".equals(obj.get("rst"))) {
-            if (obj.getBoolean("verf")) {
-                showTip("通过验证，欢迎回来！");
-            } else {
-                showTip("验证不通过");
-            }
-        } else {
-            showTip("验证失败");
-        }
-    }
-
-
-
 
     /**
      * 人脸注册监听器
@@ -199,6 +168,11 @@ public class OnlineFaceDemo extends Activity implements View.OnClickListener {
 
                 if ("accepted".equalsIgnoreCase(decision)) {
                     showTip("通过验证");
+                    Intent intent = new Intent();
+                    String id = online_authid.getText().toString();
+                    intent.putExtra("auth_id",id);
+                    setResult(0,intent);
+                    finish();
                 } else {
                     showTip("验证失败");
                 }
@@ -371,13 +345,17 @@ public class OnlineFaceDemo extends Activity implements View.OnClickListener {
 
             case R.id.online_camera:
                 // 设置相机拍照后照片保存路径
-                mPictureFile = new File(Environment.getExternalStorageDirectory(),
-                        "picture" + System.currentTimeMillis()/1000 + ".jpg");
+                mPictureFile = new File(Environment.getExternalStorageDirectory().getAbsolutePath()
+                        + "/face/" + System.currentTimeMillis() + ".jpg");
+                mPictureFile.getParentFile().mkdirs();
                 // 启动拍照,并保存到临时文件
                 Intent mIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-//                mIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(mPictureFile));
-                mIntent.putExtra(MediaStore.Images.Media.ORIENTATION, 0);
-                startActivityForResult(mIntent, 2);
+                //改变Uri
+                Uri uri = FileProvider.getUriForFile(this, "com.xidian.aria.ariamap.fileprovider", mPictureFile);
+                //添加权限
+                mIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                mIntent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+                startActivityForResult(mIntent, REQUEST_CAMERA_IMAGE);
                 break;
             case R.id.btn_modle_delete:
                 // 人脸模型删除
@@ -386,11 +364,6 @@ public class OnlineFaceDemo extends Activity implements View.OnClickListener {
                 break;
             default:
                 break;
-        }//end of switch
-
-        if( ErrorCode.SUCCESS != ret ){
-            mProDialog.dismiss();
-            showTip( "出现错误："+ret );
         }
     }
 
@@ -415,62 +388,15 @@ public class OnlineFaceDemo extends Activity implements View.OnClickListener {
                 fileSrc = cursor.getString(idx);
                 cursor.close();
             }
-            // 跳转到图片裁剪页面
-            FaceUtil.cropPicture(this,Uri.fromFile(new File(fileSrc)));
+            crop_picture(fileSrc);
         } else if (requestCode == REQUEST_CAMERA_IMAGE) {
             if (null == mPictureFile) {
                 showTip("拍照失败，请重试");
                 return;
             }
-//
             fileSrc = mPictureFile.getAbsolutePath();
-            System.out.println(fileSrc);
             updateGallery(fileSrc);
-            Uri uri = Uri.parse("file://"+ fileSrc);
-//            // 跳转到图片裁剪页面
-            FaceUtil.cropPicture(this,uri);
-        } else if (requestCode == FaceUtil.REQUEST_CROP_IMAGE) {
-            // 获取返回数据
-            Bitmap bmp = data.getParcelableExtra("data");
-            // 若返回数据不为null，保存至本地，防止裁剪时未能正常保存
-            if(null != bmp){
-                FaceUtil.saveBitmapToFile(OnlineFaceDemo.this, bmp);
-            }
-            // 获取图片保存路径
-            fileSrc = FaceUtil.getImagePath(OnlineFaceDemo.this);
-            // 获取图片的宽和高
-            BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inJustDecodeBounds = true;
-            mImage = BitmapFactory.decodeFile(fileSrc, options);
-
-            // 压缩图片
-            options.inSampleSize = Math.max(1, (int) Math.ceil(Math.max(
-                    (double) options.outWidth / 1024f,
-                    (double) options.outHeight / 1024f)));
-            options.inJustDecodeBounds = false;
-            mImage = BitmapFactory.decodeFile(fileSrc, options);
-
-
-            // 若mImageBitmap为空则图片信息不能正常获取
-            if(null == mImage) {
-                showTip("图片信息无法正常获取！");
-                return;
-            }
-
-            // 部分手机会对图片做旋转，这里检测旋转角度
-            int degree = FaceUtil.readPictureDegree(fileSrc);
-            if (degree != 0) {
-                // 把图片旋转为正的方向
-                mImage = FaceUtil.rotateImage(degree, mImage);
-            }
-
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-
-            //可根据流量及网络状况对图片进行压缩
-            mImage.compress(Bitmap.CompressFormat.JPEG, 80, baos);
-            mImageData = baos.toByteArray();
-
-            ((ImageView) findViewById(R.id.online_img)).setImageBitmap(mImage);
+            crop_picture(fileSrc);
         }
 
     }
@@ -498,5 +424,33 @@ public class OnlineFaceDemo extends Activity implements View.OnClickListener {
     private void showTip(final String str) {
         mToast.setText(str);
         mToast.show();
+    }
+    public void crop_picture(String fileSrc){
+        // 获取图片的宽和高
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        // 压缩图片
+        options.inSampleSize = Math.max(1, (int) Math.ceil(Math.max(
+                (double) options.outWidth / 1024f,
+                (double) options.outHeight / 1024f)));
+        options.inJustDecodeBounds = false;
+        mImage = BitmapFactory.decodeFile(fileSrc, options);
+        // 若mImageBitmap为空则图片信息不能正常获取
+        if(null == mImage) {
+            showTip("图片信息无法正常获取！");
+            return;
+        }
+        // 部分手机会对图片做旋转，这里检测旋转角度
+        int degree = FaceUtil.readPictureDegree(fileSrc);
+        if (degree != 0) {
+            // 把图片旋转为正的方向
+            mImage = FaceUtil.rotateImage(degree, mImage);
+        }
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        //可根据流量及网络状况对图片进行压缩
+        mImage.compress(Bitmap.CompressFormat.JPEG, 80, baos);
+        mImageData = baos.toByteArray();
+        ((ImageView) findViewById(R.id.online_img)).setImageBitmap(mImage);
+
     }
 }

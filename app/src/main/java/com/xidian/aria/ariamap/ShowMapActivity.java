@@ -66,7 +66,7 @@ import com.iflytek.cloud.SpeechUtility;
 import com.iflytek.cloud.ui.RecognizerDialog;
 import com.iflytek.cloud.ui.RecognizerDialogListener;
 import com.xidian.aria.ariamap.calwalk.CalWalkMainActivity;
-import com.xidian.aria.ariamap.face.OnlineFaceDemo;
+import com.xidian.aria.ariamap.face.FaceLoginActivity;
 import com.xidian.aria.ariamap.guide.BNaviGuideActivity;
 import com.xidian.aria.ariamap.guide.WNaviGuideActivity;
 import com.xidian.aria.ariamap.navs.BusSearchActivity;
@@ -151,6 +151,7 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
     private BikeNaviLaunchParam param;
     private WalkNaviLaunchParam walkParam;
     private OnGetSuggestionResultListener listener;
+    private static final int FACE_LOGIN = 1;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -323,8 +324,8 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
         Intent intent;
         switch (item.getItemId()){
             case R.id.face_login:
-                intent = new Intent(getApplicationContext(),OnlineFaceDemo.class);
-                startActivity(intent);
+                intent = new Intent(getApplicationContext(),FaceLoginActivity.class);
+                startActivityForResult(intent,FACE_LOGIN);
                 break;
             case R.id.bus_search_item:
                 intent = new Intent(getApplicationContext(),BusSearchActivity.class);
@@ -435,6 +436,18 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
             }
         }
         arrayAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode){
+            case FACE_LOGIN:
+                String authId = data.getStringExtra("auth_id");
+                navigationView.getMenu().findItem(R.id.user_tv).setTitle("用户："+authId);
+                break;
+            default:
+                break;
+        }
     }
 
     /**
