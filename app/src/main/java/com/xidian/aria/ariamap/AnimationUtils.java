@@ -5,10 +5,6 @@ import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 
 public class AnimationUtils {
-    public enum AnimationState{
-        STATE_SHOW,
-        STATE_HIDDEN
-    }
     /**
      * 渐隐渐现动画
      * @param view 需要实现动画的对象

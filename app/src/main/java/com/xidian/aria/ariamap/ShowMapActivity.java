@@ -66,6 +66,7 @@ import com.iflytek.cloud.SpeechUtility;
 import com.iflytek.cloud.ui.RecognizerDialog;
 import com.iflytek.cloud.ui.RecognizerDialogListener;
 import com.xidian.aria.ariamap.calwalk.CalWalkMainActivity;
+import com.xidian.aria.ariamap.dao.SpeechDo;
 import com.xidian.aria.ariamap.face.FaceLoginActivity;
 import com.xidian.aria.ariamap.guide.BNaviGuideActivity;
 import com.xidian.aria.ariamap.guide.WNaviGuideActivity;

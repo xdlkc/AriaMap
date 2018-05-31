@@ -14,10 +14,10 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.xidian.aria.ariamap.R;
-import com.xidian.aria.ariamap.calwalk.adapter.CommonAdapter;
-import com.xidian.aria.ariamap.calwalk.adapter.CommonViewHolder;
-import com.xidian.aria.ariamap.calwalk.step.bean.StepData;
-import com.xidian.aria.ariamap.calwalk.step.utils.DbUtils;
+import com.xidian.aria.ariamap.adapters.CommonAdapter;
+import com.xidian.aria.ariamap.adapters.CommonViewHolder;
+import com.xidian.aria.ariamap.dao.StepDo;
+import com.xidian.aria.ariamap.utils.DbUtils;
 
 import java.util.List;
 
@@ -54,15 +54,15 @@ public class CalWalkHistoryActivity extends AppCompatActivity {
         if(DbUtils.getLiteOrm()==null){
             DbUtils.createDb(this, "calwalk");
         }
-        List<StepData> stepDatas =DbUtils.getQueryAll(StepData.class);
-        Log.d("","stepDatas="+stepDatas);
-        lv.setAdapter(new CommonAdapter<StepData>(this,stepDatas,R.layout.walk_step_item) {
+        List<StepDo> stepDos =DbUtils.getQueryAll(StepDo.class);
+        Log.d("","stepDos="+ stepDos);
+        lv.setAdapter(new CommonAdapter<StepDo>(this, stepDos,R.layout.walk_step_item) {
             @Override
-            protected void convertView(View item, StepData stepData) {
+            protected void convertView(View item, StepDo stepDo) {
                 TextView tv_date= CommonViewHolder.get(item,R.id.tv_date);
                 TextView tv_step= CommonViewHolder.get(item,R.id.tv_step);
-                tv_date.setText(stepData.getToday());
-                tv_step.setText(stepData.getStep()+"步");
+                tv_date.setText(stepDo.getToday());
+                tv_step.setText(stepDo.getStep()+"步");
             }
         });
     }

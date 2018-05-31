@@ -12,10 +12,9 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.xidian.aria.ariamap.R;
-import com.xidian.aria.ariamap.calwalk.step.UpdateUiCallBack;
-import com.xidian.aria.ariamap.calwalk.step.service.StepService;
-import com.xidian.aria.ariamap.calwalk.step.utils.SharedPreferencesUtils;
-import com.xidian.aria.ariamap.calwalk.view.StepArcView;
+import com.xidian.aria.ariamap.listeners.UpdateStepListener;
+import com.xidian.aria.ariamap.services.StepService;
+import com.xidian.aria.ariamap.utils.SharedPreferencesUtils;
 
 
 /**
@@ -86,16 +85,18 @@ public class CalWalkMainActivity extends AppCompatActivity implements View.OnCli
          */
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
+            Log.d(TAG, "onServiceConnected: onServiceConnected");
             StepService stepService = ((StepService.StepBinder) service).getService();
             //设置初始化数据
             String planWalk_QTY = (String) sp.getParam("planWalk_QTY", "7000");
             cc.setCurrentCount(Integer.parseInt(planWalk_QTY), stepService.getStepCount());
 
             //设置步数监听回调
-            stepService.registerCallback(new UpdateUiCallBack() {
+            stepService.registerCallback(new UpdateStepListener() {
                 @Override
                 public void updateUi(int stepCount) {
                     String planWalk_QTY = (String) sp.getParam("planWalk_QTY", "7000");
+                    Log.d(TAG, "updateUi: stepCount");
                     cc.setCurrentCount(Integer.parseInt(planWalk_QTY), stepCount);
                 }
             });

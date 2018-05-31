@@ -8,12 +8,11 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
 
 import com.xidian.aria.ariamap.R;
-import com.xidian.aria.ariamap.calwalk.step.utils.SharedPreferencesUtils;
+import com.xidian.aria.ariamap.utils.SharedPreferencesUtils;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -26,8 +25,6 @@ import java.util.Locale;
 public class CalWalkSetPlanActivity extends AppCompatActivity implements View.OnClickListener {
 
     private SharedPreferencesUtils sp;
-
-    private LinearLayout layout_titlebar;
     private ImageView iv_left;
     private ImageView iv_right;
     private EditText tv_step_number;
@@ -39,7 +36,6 @@ public class CalWalkSetPlanActivity extends AppCompatActivity implements View.On
     private String achieveTime;
 
     private void assignViews() {
-        layout_titlebar = (LinearLayout) findViewById(R.id.layout_titlebar);
         iv_left = (ImageView) findViewById(R.id.iv_left);
         iv_right = (ImageView) findViewById(R.id.iv_right);
         tv_step_number = (EditText) findViewById(R.id.tv_step_number);

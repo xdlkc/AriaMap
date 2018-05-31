@@ -1,13 +1,9 @@
 package com.xidian.aria.ariamap.listeners;
 
-import android.widget.ArrayAdapter;
-
 import com.baidu.mapapi.map.BaiduMap;
-import com.baidu.mapapi.search.core.SearchResult;
 import com.baidu.mapapi.search.route.BikingRouteResult;
 import com.baidu.mapapi.search.route.DrivingRouteResult;
 import com.baidu.mapapi.search.route.IndoorRouteResult;
-import com.baidu.mapapi.search.route.MassTransitRouteLine;
 import com.baidu.mapapi.search.route.MassTransitRouteResult;
 import com.baidu.mapapi.search.route.OnGetRoutePlanResultListener;
 import com.baidu.mapapi.search.route.TransitRouteResult;
@@ -16,9 +12,6 @@ import com.xidian.aria.ariamap.overlays.MyDrivingRouteOverlay;
 import com.xidian.aria.ariamap.overlays.MyWalkingRouteOverlay;
 import com.xidian.aria.ariamap.overlayutil.DrivingRouteOverlay;
 import com.xidian.aria.ariamap.overlayutil.WalkingRouteOverlay;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class MyOnGetRoutePlanResultListener implements OnGetRoutePlanResultListener {
     private BaiduMap map;

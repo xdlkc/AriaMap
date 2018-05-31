@@ -28,7 +28,7 @@
             android:text="查看历史步数"
             android:textColor="#333333" />
 
-        <com.xidian.aria.ariamap.calwalk.view.StepArcView
+        <com.xidian.aria.ariamap.calwalk.StepArcView
             android:id="@+id/cc"
             android:layout_width="200dp"
             android:layout_height="200dp"
