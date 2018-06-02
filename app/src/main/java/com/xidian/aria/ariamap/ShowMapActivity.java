@@ -514,12 +514,12 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
             public void onResult(RecognizerResult recognizerResult, boolean b) {
                 Gson gson = new Gson();
                 SpeechDo speechDo = gson.fromJson(recognizerResult.getResultString(),SpeechDo.class);
-                for (SpeechDo.SpeechV2 speechV2 : speechDo.ws){
-                    for (SpeechDo.SpeechV3 speechV3 : speechV2.cw){
-                        speechBuilder.append(speechV3.w);
+                for (SpeechDo.SpeechV2 speechV2 : speechDo.getWs()){
+                    for (SpeechDo.SpeechV3 speechV3 : speechV2.getCw()){
+                        speechBuilder.append(speechV3.getW());
                     }
                 }
-                if (speechDo.ls){
+                if (speechDo.getLs()){
                     enAutoTw.setText(speechBuilder.toString());
                 }
             }
