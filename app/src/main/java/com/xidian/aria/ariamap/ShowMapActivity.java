@@ -396,8 +396,13 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
                 mBaiduMap.setMapStatus(mMapStatusUpdate);
                 break;
             case R.id.way_btn:
+                if (startPoi == null){
+                    Toast toast = Toast.makeText(getApplicationContext(),"请输入起点！",Toast.LENGTH_SHORT);
+                    toast.show();
+                    break;
+                }
                 if (endPoi == null){
-                    Toast toast = Toast.makeText(getApplicationContext(),"请输入目标位置！",Toast.LENGTH_SHORT);
+                    Toast toast = Toast.makeText(getApplicationContext(),"请输入终点！",Toast.LENGTH_SHORT);
                     toast.show();
                     break;
                 }
@@ -407,8 +412,15 @@ public class ShowMapActivity extends Activity implements BaiduMap.OnMapClickList
                 startActivity(intent);
                 break;
             case R.id.nav_btn:
+                if (startPoi == null){
+                    Toast toast = Toast.makeText(getApplicationContext(),"请输入起点！",Toast.LENGTH_SHORT);
+                    toast.show();
+                    break;
+                }
                 if (endPoi == null){
-                    Toast.makeText(getApplicationContext(),"未确定目标地点!",Toast.LENGTH_SHORT).show();
+                    Toast toast = Toast.makeText(getApplicationContext(),"请输入终点！",Toast.LENGTH_SHORT);
+                    toast.show();
+                    break;
                 }
                 initMapGuide();
                 break;
