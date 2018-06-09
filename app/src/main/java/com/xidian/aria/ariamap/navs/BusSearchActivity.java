@@ -60,6 +60,7 @@ public class BusSearchActivity extends AppCompatActivity implements OnGetBusLine
                 List<PoiInfo> infos = poiResult.getAllPoi();
                 if (infos == null || infos.size() == 0){
                     Toast.makeText(getApplicationContext(),"未找到相关公交，请重新输入！",Toast.LENGTH_SHORT).show();
+                    return;
                 }
                 for (PoiInfo info : infos){
                     if (info.type == PoiInfo.POITYPE.BUS_LINE){
