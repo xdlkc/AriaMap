@@ -11,8 +11,7 @@
         android:layout_height="60dp"
         android:textSize="20sp"
         android:singleLine="true"
-        android:hint="输入公交线路：如916"
-        android:inputType="number" />
+        android:hint="输入公交线路：如916"/>
 
     <ImageButton
         android:id="@+id/bus_search_btn"

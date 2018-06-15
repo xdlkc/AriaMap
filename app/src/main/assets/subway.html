@@ -26,6 +26,10 @@
                     break;
                 }
             }
+            if (subwaycity === null){
+                alert("未找到城市，请重新输入！");
+                return;
+            }
             var subway = new BMapSub.Subway('container', subwaycity.citycode);
             subway.setZoom(0.5);
         }

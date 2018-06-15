@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.webkit.JavascriptInterface;
+import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -33,6 +34,7 @@ public class SubwayActivity extends AppCompatActivity {
         searchSub = findViewById(R.id.search_subway_btn);
         editText = findViewById(R.id.subway_edt);
         WebSettings settings = webView.getSettings();
+        webView.setWebChromeClient(new WebChromeClient());
         settings.setJavaScriptEnabled(true);
         webView.loadUrl("file:///android_asset/subway.html");
         searchSub.setOnClickListener(new View.OnClickListener() {
