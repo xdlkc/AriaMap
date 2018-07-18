@@ -101,7 +101,7 @@ public class WeatherActivity extends AppCompatActivity {
 
         @Override
         public String call() throws Exception {
-            String url= "http://v.juhe.cn/weather/index?cityname="+city+"&key=d116d41b9f197d2391a91afa9a89d100&format=2";
+            String url= "http://v.juhe.cn/weather/index?cityname="+city+"&key=xxxx&format=2";
             result = PureNetUtil.get(url);
             return result;//通过工具类获取返回数据
         }

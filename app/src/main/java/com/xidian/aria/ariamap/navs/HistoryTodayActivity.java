@@ -45,7 +45,7 @@ public class HistoryTodayActivity extends AppCompatActivity {
     private List<String > data;
     private TextView dateTv;
     //配置您申请的KEY
-    public static final String APPKEY ="65bb96268ec7cc8ce81f3b8972db5ce9";
+    public static final String APPKEY ="xx";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

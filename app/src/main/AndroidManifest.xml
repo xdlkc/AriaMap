@@ -79,12 +79,10 @@
 
         <meta-data
             android:name="IFLYTEK_APPKEY"
-            android:value="5ae49d2d" />
+            android:value="xxx" />
         <meta-data
             android:name="com.baidu.lbsapi.API_KEY"
-            android:value="TGQwg4RlNkL53IW11ab4A3GzLvNhmFos" />
-        <!-- android:value="HsM7LUKpgk4vgOewGYvHqgB5LPp8ciUu" /> -->
-        <!-- android:value="d521WulfOyVh5H5TuNMqjqvxnXgWiSKH" /> -->
+            android:value="xx" />
         <activity android:name=".ShowMapActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
